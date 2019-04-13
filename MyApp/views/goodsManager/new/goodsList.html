@@ -1,0 +1,118 @@
+<div class="demoTable">
+    品名：
+    <div class="layui-inline">
+        <input class="layui-input" name="searchPinming" id="searchPinming">
+    </div>
+    <button class="layui-btn" id="reloadBtn" data-type="reload">搜索</button>
+</div>
+<div class="layui-btn-group" style="margin-top:10px;">
+    <button class="layui-btn btn-add">增加</button>
+    <button class="layui-btn btn-edit">编辑</button>
+    <button class="layui-btn btn-delete">删除</button>
+</div>
+<table class="layui-hide" id="goodsGrid" lay-filter="goodsGrid"></table>
+
+<script>
+
+    layui.use(["jquery","table"],function() {
+        var $ = layui.$;
+        var table = layui.table;
+        var ins1 = table.render({
+            elem: '#goodsGrid'
+            ,id:'goodsGrid'
+            , url: '/goodsInfo/list'
+            , limit: 10
+            , cols: [[
+                {checkbox: true, fixed: true}
+//                , {field: 'id', title: 'ID', width: 80, sort: true, fixed: true}
+                , {field: 'pinming', title: '品名', width: 220, sort: true}
+                , {field: 'guige', title: '规格', width: 120, sort: true}
+                , {field: 'danwei', title: '单位', width: 120, sort: true}
+                , {field: 'jinjia', title: '进价', width: 120, sort: true}
+                , {field: 'kucun', title: '库存', width: 80, sort: true}
+//                , {field: 'remark', title: '备注', sort: true, width: 330}
+            ]]
+            , page: true
+            , height: 422
+        });
+
+        $("#reloadBtn").on("click",function(){
+            var searchPinming = $('#searchPinming');
+            ins1.reload({
+                where: {
+                    searchPinming: searchPinming.val()
+                }
+            });
+        })
+
+        $(".btn-add").on("click",function(){
+            layer.open({
+                type: 2,
+                area: ['400px', '500px'],
+                content: '/goodsInfo/edit', //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                end: function(){
+                    ins1.reload();
+                }
+            });
+        })
+
+        $(".btn-edit").on("click",function(){
+            var data  = table.checkStatus('goodsGrid').data;
+            if(data && data.length==1){
+                var id = data[0].id;
+                layer.open({
+                    type: 2,
+                    area: ['400px', '500px'],
+                    content: '/goodsInfo/edit?id='+id, //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                    end: function(){
+                        ins1.reload();
+                    }
+                });
+            }else{
+                alert("请选择一条记录");
+            }
+        })
+
+        $(".btn-delete").on("click",function(){
+
+            var data  = table.checkStatus('goodsGrid').data;
+            if(data && data.length==1){
+                var id = data[0].id;
+                $.post("/goodsInfo/remove",{id:id},function(result){
+                    ins1.reload({
+                        where: { //设定异步数据接口的参数
+                            id: 1
+                        }
+                    });
+//                    if("success" == result){
+//                        alert("删除成功");
+//                    }
+                })
+            }else{
+                alert("请选择一条记录");
+            }
+        })
+
+//        var active = {
+//            reload: function(){
+//                var searchPinming = $('#searchPinming');
+//
+//                ins1.reload({
+//                    where: {
+//                        key: {
+//                            id: searchPinming.val()
+//                        }
+//                    }
+//                });
+//            }};
+//        var searchPinming = $('#searchPinming');
+//
+//        ins1.reload({
+//            where: {
+//                key: {
+//                    id: searchPinming.val()
+//                }
+//            }
+//        });
+    })
+</script>

@@ -1,0 +1,119 @@
+<link rel="stylesheet" href="/js/layui/css/layui.css">
+<style>
+    .layui-input-block{padding-right: 40px;}
+    #jinhuojiage{height: 36px;float: right;line-height: 36px;}
+</style>
+<form class="layui-form" method="post" action="/tradeInfo/jinHuoSaveOrUpdate">
+    <input type="hidden" name="id" value="<%= id %>">
+    <input type="hidden" name="shangpinidDefault" value="<%= shangpinid %>">
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+            <input class="radio" lay-filter="type" type="radio" name="type" value="进货" title="进货" checked>
+            <div id="jinhuojiage"></div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="margin-top:15px;">
+        <label class="layui-form-label">品名</label>
+        <div class="layui-input-block">
+            <select name="shangpinid" id="pinming" lay-filter="pinming" lay-verify="required" lay-search="" value="<%= shangpinid %>">
+                <option value="">直接选择或搜索选择</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">日期</label>
+        <div class="layui-input-block">
+            <input type="text" name="riqi" id="date" lay-verify="date" value="<%= riqi %>" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input">
+            <!--<input type="text" name="riqi" required value="<%= riqi %>"  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">-->
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">数量</label>
+        <div class="layui-input-block">
+            <input type="text" name="shuliang" required value="<%= shuliang %>"  lay-verify="required" placeholder="请输入数量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">单价</label>
+        <div class="layui-input-block">
+            <input type="text" id="jiage" name="jiage" value="<%= jiage %>"  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-block">
+            <textarea name="remark" placeholder="请输入备注" class="layui-textarea"><%= remark %></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script src="/js/layui/layui.js"></script>
+<script>
+    var type = "出货";
+    //Demo
+    layui.use(['form','laydate','jquery'], function(){
+        var form = layui.form;
+        var laydate = layui.laydate;
+        var $ = layui.$;
+
+        //日期
+        laydate.render({
+            elem: '#date'
+        });
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index);
+        });
+
+        $.get("/goodsInfo/list",function(result){
+            var options = "";
+            var shangpinid = $("#pinming").attr("value");
+
+            for(var index in result.data){
+                var obj = result.data[index];
+                if(obj.id == shangpinid){
+                    options += '<option selected value="'+obj.id+'">'+obj.pinming+'----'+obj.guige+'</option>';
+                }else{
+                    options += '<option value="'+obj.id+'">'+obj.pinming+'----'+obj.guige+'</option>';
+                }
+            }
+            $("#pinming").append(options);
+            form.render('select');
+        })
+
+        form.on('radio(type)', function(data){
+            type = data.value;
+            $("#jinhuojiage").html("");
+        });
+
+        form.on('select(pinming)', function(data){
+            $.get("/goodsInfo/getPrice",{id:data.value},function(result){
+                if(type=="进货"){
+                    $("#jiage").val(result);
+                    $("#jinhuojiage").html("");
+                }else{
+                    $("#jinhuojiage").html(result);
+                }
+            })
+            // getKucun(data.value);
+        });
+
+        // function getKucun(id){
+        //     $.get("/goodsInfo/getKucun",{id:id},function(result){
+        //         if(result.length>0){
+        //             $("#kucun").val(result[0].kucun);
+        //         }else{
+        //             $("#kucun").val(0);
+        //         }
+        //     })
+        // }
+        // getKucun($("[name=shangpinidDefault]").val());
+    });
+</script>

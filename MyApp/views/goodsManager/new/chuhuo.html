@@ -1,0 +1,141 @@
+<link rel="stylesheet" href="/js/layui/css/layui.css">
+<!-- 引入样式 -->
+<!--<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+<link rel="stylesheet" href="/css/element/index.css">
+<div id="sellApp">
+
+    <form method="post" enctype="multipart/form-data" action="/file-upload">
+        <input type="text" name="username">
+        <input type="password" name="password">
+        <input type="file" name="thumbnail">
+        <input type="submit">
+    </form>
+<form class="layui-form" action="">
+    <el-dialog
+            title="提示"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose">
+        <span>添加成功</span>
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+  </span>
+    </el-dialog>
+
+    <div class="layui-form-item" style="margin-top:15px;">
+        <label class="layui-form-label">品名：</label>
+        <div class="layui-inline">
+            <template>
+                <el-select v-model="goodsId" filterable @change="selectFn" placeholder="请选择">
+                    <el-option
+                            v-for="item in goodsList"
+                            :key="item.id"
+                            :label="item.pinming+'-----'+item.guige"
+                            :value="item.id">
+                    </el-option>
+                </el-select>
+            </template>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">出货日期：</label>
+            <div class="layui-input-block">
+                <template>
+                    <div class="block">
+                        <el-date-picker v-model="date" value-format="yyyy-MM-dd" type="date" placeholder="选择日期">
+                        </el-date-picker>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <el-button @click="autoInputFun" type="primary">自动填入</el-button>
+    </div>
+    <div class="layui-form-item">
+
+        <div class="layui-inline">
+            <label class="layui-form-label">出货总数：</label>
+            <div class="layui-input-block">
+                <el-input v-model="sellTotalNum" @blur="" placeholder="请输入出货总数"></el-input>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">出货单价：</label>
+            <div class="layui-input-block">
+                <el-input v-model="sellPerPrice"  @blur="" placeholder="请输入出售单价"></el-input>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">出货总价：</label>
+            <div class="layui-input-block">
+                <el-input v-model="sellTotalMoney"  @blur="" placeholder="请输入出售总价"></el-input>
+            </div>
+        </div>
+    </div>
+
+    <table class="layui-table" lay-skin="line">
+        <colgroup>
+            <col width="180">
+            <col width="180">
+            <col width="180">
+            <col width="180">
+            <col width="180">
+            <col width="180">
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+
+            <!--<th>进货批次</th>-->
+            <th>进货日期</th>
+            <th>进货价格</th>
+            <th>进货数量</th>
+            <th>库存</th>
+            <th>出售价格</th>
+            <th>出售数量</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr v-for="data in sellList">
+            <!--<td>{{data.id}}</td>-->
+            <td>{{data.date}}</td>
+            <td>{{data.price}}</td>
+            <td>{{data.number}}</td>
+            <td>{{data.nowNumber}}<span style="color:red" v-if="data.sellNumber>data.nowNumber">&nbsp;&nbsp;库存不足！！</span></td>
+            <td><el-input v-model="data.sellPrice" placeholder="请输入内容"></el-input></td>
+            <td><el-input v-model="data.sellNumber" placeholder="请输入内容"></el-input></td>
+
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <!--<el-button type="text" @click="dialogVisible = true">点击打开 Dialog</el-button>-->
+            <el-button @click="submitForm" type="primary">提交</el-button>
+            <!--<button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>-->
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+</div>
+
+<script src="/dist/js/sellPage.js"></script>
+<script src="/js/layui/layui.js"></script>
+<script>
+
+
+    layui.use(['form'], function () {
+        var form = layui.form;
+
+        //监听提交
+        form.on('submit(formDemo)', function (data) {
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            debugger;
+            parent.layer.close(index);
+        });
+
+
+    })
+</script>

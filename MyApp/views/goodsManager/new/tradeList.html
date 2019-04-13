@@ -1,0 +1,202 @@
+<style>
+    .hjq-fr{float: right;}
+    .count-div{font-size: 16px;}
+    .count-div span{margin-right: 10px;}
+</style>
+<div class="demoTable">
+
+    <form class="layui-form" method="post" action="">
+        品名：
+        <div class="layui-inline" style="width: 140px;">
+            <select name="searchShangpinid" id="searchShangpinid" lay-filter="pinming" lay-verify="required" lay-search="" value="<%= shangpinid %>">
+                <option value="">直接选择或搜索选择</option>
+            </select>
+        </div>
+        类型：
+        <div class="layui-input-inline"  style="width: 100px;">
+            <select name="searchType" id="searchType" lay-verify="required" lay-search="">
+                <option value="">未选择</option>
+                <option value="进货">进货</option>
+                <option value="出货">出货</option>
+            </select>
+        </div>
+        起始日期：
+        <div class="layui-inline"  style="width: 100px;">
+            <input type="text" class="layui-input" id="searchStartDate" placeholder="yyyy-MM-dd">
+        </div>
+        结束日期：
+        <div class="layui-inline"  style="width: 100px;">
+            <input type="text" class="layui-input" id="searchEndDate" placeholder="yyyy-MM-dd">
+        </div>
+        <button class="layui-btn" id="reloadBtn" data-type="reload">搜索</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </form>
+</div>
+<div class="layui-btn-group" style="margin-top:10px;width: 100%;">
+    <!--<button class="layui-btn btn-add">增加</button>-->
+    <!--<button class="layui-btn btn-edit">编辑</button>-->
+    <button class="layui-btn btn-add">进货</button>
+    <button class="layui-btn btn-chuhuo">出货</button>
+    <button class="layui-btn btn-delete">删除</button>
+    <div class="hjq-fr count-div" style="width: auto;">
+        <span>进货金额：<span id="jinhuohuafei"></span></span>
+        <span>销售金额：<span id="xiaoshoujine"></span></span>
+        <span>已得利润：<span id="yidelirun"></span></span>
+    </div>
+</div>
+<table class="layui-hide" id="tradeGrid" lay-filter="user"></table>
+
+<script>
+
+    layui.use(["jquery", "table","laydate","form"], function () {
+        var $ = layui.$;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var form = layui.form;
+        form.render('select');
+        //常规用法
+        laydate.render({
+            elem: '#searchStartDate'
+        });
+        laydate.render({
+            elem: '#searchEndDate'
+        });
+        var ins1 = table.render({
+            elem: '#tradeGrid'
+            , id: 'tradeGrid'
+            , url: '/tradeInfo/list'
+            , height: 'full-335'
+            , limit: 10
+            , cols: [[
+                {checkbox: true, fixed: true}
+//                , {field: 'id', title: 'ID', width: 80, sort: true, fixed: true,hide:true}
+                , {field: 'pinming', title: '品名', width: 100, sort: true}
+                , {field: 'guige', title: '规格', width: 100, sort: true}
+                , {field: 'purPrice', title: '进价', width: 80, sort: true}
+                , {field: 'sellPrice', title: '售价', width: 80, sort: true}
+                , {field: 'number', title: '数量', width: 80, sort: true}
+                , {field: 'jine', title: '金额', width: 100, sort: true}
+                , {field: 'maoli', title: '毛利', width: 120, sort: true}
+                , {field: 'maolilv', title: '毛利率', width: 120, sort: true}
+                , {field: 'type', title: '类型', width: 80, sort: true}
+                , {field: 'date', title: '日期', width: 120, sort: true}
+//                , {field: 'remark', title: '备注', sort: true, width: 220}
+            ]]
+            , page: true
+            , height: 422
+        });
+
+        $("#reloadBtn").on("click", function (e) {
+            ins1.reload({
+                where: {
+                    searchShangpinid: $('#searchShangpinid').val(),
+                    searchType: $('#searchType').val(),
+                    searchStartDate: $('#searchStartDate').val(),
+                    searchEndDate: $('#searchEndDate').val()
+                }
+            });
+            countSell();
+            e.stopPropagation();
+            e.preventDefault();
+        })
+
+        $(".btn-add").on("click", function () {
+            layer.open({
+                type: 2,
+                area: ['400px', '550px'],
+                content: '/tradeInfo/edit', //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                end: function () {
+                    ins1.reload();
+                }
+            });
+        })
+
+        $(".btn-edit").on("click", function () {
+            var data = table.checkStatus('tradeGrid').data;
+            if (data && data.length == 1) {
+                var id = data[0].id;
+                layer.open({
+                    type: 2,
+                    area: ['400px', '550px'],
+                    content: '/tradeInfo/edit?id=' + id, //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                    end: function () {
+                        ins1.reload();
+                    }
+                });
+            } else {
+                alert("请选择一条记录");
+            }
+        })
+
+        $(".btn-chuhuo").on("click",function(){
+            layer.open({
+                title:"出货信息",
+                type: 2,
+                area: ['1000px', '600px'],
+                content: '/tradeInfo/chuhuoView', //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                end: function () {
+                    ins1.reload();
+                }
+            });
+        })
+
+        $(".btn-delete").on("click", function () {
+            var data = table.checkStatus('tradeGrid').data;
+            if (data && data.length == 1) {
+                var id = data[0].id;
+                var type = data[0].type;
+                $.post("/tradeInfo/remove", {id: id,type:type}, function (result) {
+                    ins1.reload({
+                        where: { //设定异步数据接口的参数
+                            id: 1
+                        }
+                    });
+                })
+            } else {
+                alert("请选择一条记录");
+            }
+        })
+
+        $.get("/goodsInfo/list",function(result){
+            var options = "";
+
+            for(var index in result.data){
+                var obj = result.data[index];
+                options += '<option value="'+obj.id+'">'+obj.pinming+'----'+obj.guige+'</option>';
+            }
+            $("#searchShangpinid").append(options);
+            form.render('select');
+        })
+
+        function countSell(){
+            var searchParam = {
+                searchStartDate:$("#searchStartDate").val(),
+                searchEndDate:$("#searchEndDate").val(),
+                id:$("#searchShangpinid").val(),
+                type:$("#searchType").val(),
+            }
+            $.get("/tradeInfo/countTradeRecord",searchParam,function(result){
+                var length = result.length;
+                var jinhuojine = 0 ,chuhuojine = 0,lirun = 0;
+                if(length == 1){
+                    if(result[0].type == "进货"){
+                        jinhuojine = result[0].jinhuojine.toFixed(2);
+                    }else{
+                        chuhuojine = result[0].chushoujia.toFixed(2);
+                        lirun = (result[0].chushoujia-result[0].jinhuojine).toFixed(2)
+                    }
+                }else if(length == 2){
+                    jinhuojine = result[0].jinhuojine.toFixed(2);
+                    chuhuojine = result[1].chushoujia.toFixed(2);
+                    lirun = (result[1].chushoujia-result[1].jinhuojine).toFixed(2);
+                }
+                $("#jinhuohuafei").html(jinhuojine);
+                $("#xiaoshoujine").html(chuhuojine);
+                $("#yidelirun").html(lirun);
+            })
+        }
+
+            countSell();
+
+    })
+</script>
