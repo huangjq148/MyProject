@@ -63,18 +63,13 @@ export default {
             this.dataId = row.id
             this.editDialogVisible = true
             BaseApi.fetchData(`/photo/edit/${this.dataId}`).then(response => {
-                this.$refs.uploader.value = response.data.info.files
-                this.form = response.data.info
+                this.$refs.uploader.value = response.info.files
+                this.form = response.info
             })
         },
         deleteData(row) {
-            PhotoApi.deletePhoto(row.id).then(response => {
-                if (response.data == 'success') {
-                    this.$notify({ title: '成功', message: '删除成功', type: 'success' })
-                } else {
-                    this.$notify.error({ title: '错误', message: '删除出错' })
-                }
-                this.$refs.grid.fetchData()
+            PhotoApi.deletePhoto(row.id).then(result => {
+                this.$refs.grid.searchForm(this.searchForm)
             })
         },
         dateFormater(row, col, val) {
@@ -102,7 +97,7 @@ export default {
             this.form.fileList = this.$refs.uploader.value
             BaseApi.save('/photo/saveOrUpdate', { photoInfo: this.form }).then(response => {
                 this.editDialogVisible = false
-                if (response.data == 'success') {
+                if (response.statusCode == '2000') {
                     this.$notify({
                         title: '成功',
                         message: '保存成功',

@@ -100,8 +100,8 @@ export default {
                 condition: this.condition,
                 sort: this.sort
             }).then(result => {
-                this.dataSource = result.data.list
-                this.page.total = result.data.total
+                this.dataSource = result.list
+                this.page.total = result.total
             })
         },
         searchForm(formData) {

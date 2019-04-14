@@ -23,7 +23,25 @@ service.interceptors.request.use(
         Promise.reject(error)
     }
 )
-
+service.interceptors.response.use(response => {
+    const res = response.data
+    if (res.statusCode && res.statusCode !== 2000) {
+        Message({
+            message: res.message,
+            type: 'error',
+            duration: 5 * 1000
+        })
+    } else if (res.statusCode && res.statusCode === 2000) {
+        Message({
+            message: res.message,
+            type: 'success',
+            duration: 5 * 1000
+        })
+        return response.data
+    } else {
+        return response.data
+    }
+})
 // respone拦截器
 // service.interceptors.response.use(
 //   response => {

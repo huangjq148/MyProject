@@ -7,24 +7,42 @@
                         <el-input v-model="searchForm.pinming" clearable placeholder="标题"></el-input>
                     </el-form-item>
                     <el-form-item> <el-button type="primary" v-on:click="searchFn">查询</el-button> </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="editPageShow = true">新增</el-button>
-                    </el-form-item>
+                    <el-form-item> <el-button type="primary" @click="handleAdd">新增</el-button> </el-form-item>
                 </el-form>
             </el-col>
         </el-row>
-        <jq-table ref="grid" url="/goodsInfo/list" :columns="columns"> </jq-table>
+        <jq-table ref="grid" url="/goods/list" :columns="columns"> </jq-table>
 
-        <el-dialog v-model="editPageShow"> <EditPage></EditPage> </el-dialog>
+        <el-dialog :visible.sync="editPageShow">
+            <EditPage :goodsId="goodsId" @callback="handleCallback"></EditPage>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import axios from 'axios'
 import EditPage from './editPage'
+import GoodsApi from '@/api/goods'
 export default {
     methods: {
         searchFn() {
+            this.$refs.grid.searchForm(this.searchForm)
+        },
+        handleAdd() {
+            this.goodsId = ''
+            this.editPageShow = true
+        },
+        handleEdit(row) {
+            this.goodsId = row.id
+            this.editPageShow = true
+        },
+        handleDelete(row) {
+            GoodsApi.delete(row.id).then(result => {
+                this.$refs.grid.searchForm(this.searchForm)
+            })
+        },
+        handleCallback() {
+            this.editPageShow = false
             this.$refs.grid.searchForm(this.searchForm)
         }
     },
@@ -33,6 +51,7 @@ export default {
     data() {
         return {
             editPageShow: false,
+            goodsId: '',
             searchForm: {
                 pinming: ''
             },
@@ -44,11 +63,7 @@ export default {
                 { prop: 'kucun', label: '库存' },
                 {
                     prop: 'op',
-                    options: [
-                        { label: '查看', func: this.showImg },
-                        { label: '编辑', func: this.openEditDialog },
-                        { label: '删除', func: this.deleteData }
-                    ],
+                    options: [{ label: '编辑', func: this.handleEdit }, { label: '删除', func: this.handleDelete }],
                     label: '操作'
                 }
             ],

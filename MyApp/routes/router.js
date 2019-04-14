@@ -84,8 +84,8 @@ router.post('/file/delete/:id', function(req, res, next) {
 router.use('/index', index)
 router.use('/users', user)
 router.use('/demos', demos)
-router.use('/goodsInfo', goodsInfo)
-router.use('/tradeInfo', tradeInfo)
+router.use('/goods', goodsInfo)
+router.use('/trade', tradeInfo)
 router.use('/photo', photo)
 
 module.exports = router

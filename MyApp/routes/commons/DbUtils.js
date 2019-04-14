@@ -10,9 +10,12 @@ var pool = mysql.createPool({
     port: 3306
 })
 
-let DbUtils = {
-    tableName: '',
-    query: function(sql, params) {
+class DbUtils {
+    constructor(tableName) {
+        this.tableName = tableName
+    }
+
+    query(sql, params) {
         console.log('sql:' + sql)
         console.log('params:' + params)
         return new Promise(function(resolve, reject) {
@@ -34,7 +37,8 @@ let DbUtils = {
                 }
             })
         })
-    },
+    }
+
     insert(dataObj, tableName) {
         let sql = `insert into ${tableName || this.tableName}({{keys}}) values({{values}})`
         let params = []
@@ -56,7 +60,8 @@ let DbUtils = {
         sql = sql.replace('{{keys}}', keys.join(','))
         sql = sql.replace('{{values}}', values.join(','))
         return this.query(sql, params)
-    },
+    }
+
     update(dataObj, updateParams) {
         let sql = `update ${this.tableName} set {{updateSql}} where 1=1 {{whereSql}}`
         let params = []
@@ -76,8 +81,12 @@ let DbUtils = {
         }
         sql = sql.replace('{{updateSql}}', updateSql)
         sql = sql.replace('{{whereSql}}', whereSql)
-        return this.query(sql, params)
-    },
+        return this.query(sql, params).catch(err => {
+            console.log(err)
+            return err
+        })
+    }
+
     delete(paramsObj, tableName) {
         let sql = `delete from ${tableName || this.tableName} where 1=1 `
         let params = []
@@ -88,7 +97,8 @@ let DbUtils = {
             }
         }
         return this.query(sql, params)
-    },
+    }
+
     queryList(reqBody, tableName) {
         let condition = reqBody.condition,
             sort = reqBody.sort,
@@ -126,7 +136,8 @@ let DbUtils = {
             .catch(reason => {
                 return reason
             })
-    },
+    }
+
     queryObj(params, tableName) {
         let sql = `select * from ${tableName || this.tableName} where 1=1 `,
             conditionSql = '',
@@ -144,7 +155,5 @@ let DbUtils = {
             })
     }
 }
-module.exports = function(tableName) {
-    DbUtils.tableName = tableName
-    return DbUtils
-}
+
+module.exports = DbUtils

@@ -3,11 +3,9 @@
  */
 let express = require('express')
 let router = express.Router()
-let query = require('../commons/db.js')
 let UUID = require('node-uuid')
-let DbUtilsFn = require('../commons/DbUtils.js')
-let Utils = require('../commons/Utils')
-let DbUtils = DbUtilsFn('photo')
+let { Utils, DbUtilsClass, ResponseResult } = require('../commons')
+let DbUtils = new DbUtilsClass('t_photo')
 let photo = {
     id: '',
     title: '',
@@ -44,7 +42,7 @@ router.post('/saveOrUpdate', function(req, res, next) {
 
     Promise.all(waitArr)
         .then(function(data) {
-            res.end('success')
+            res.end(ResponseResult.success())
         })
         .catch(function(err) {
             res.end(err)
@@ -84,8 +82,10 @@ router.post('/edit/:id', function(req, res, next) {
 })
 
 router.get('/delete/:id', function(req, res, next) {
-    DbUtils.delete({ id: req.params.id }, 't_upload_file').then(() => {
-        res.end('success')
+    let f1 = DbUtils.delete({ id: req.params.id })
+    let f2 = DbUtils.delete({ recordId: req.params.id }, 't_upload_file')
+    Promise.all([f1, f2]).then(result => {
+        res.end(ResponseResult.success())
     })
 })
 

@@ -15,12 +15,14 @@ import store from './store'
 
 import '@/icons' // icon
 import '@/components'
+import utils from '@/utils'
 // import '@/permission' // permission control
 
 Vue.use(ElementUI, { locale })
 Vue.use(Vuex)
 
 Object.defineProperty(Vue.prototype, '$moment', { value: moment })
+Object.defineProperty(Vue.prototype, '$utils', { value: utils })
 
 Vue.filter('dataFormatter', function(value, fmt) {
     return moment(value).format(fmt)

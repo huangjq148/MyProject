@@ -20,7 +20,12 @@
             <!--</el-card>-->
             <!--</el-timeline-item>-->
 
-            <el-timeline-item v-for="data in showData" :timestamp="data.photoDate" placement="top">
+            <el-timeline-item
+                v-for="(data, index) in showData"
+                :key="data.id"
+                :timestamp="data.photoDate"
+                placement="top"
+            >
                 <el-card>
                     <h4>{{ data.title }}</h4>
                     <p>{{ data.description }}</p>
@@ -41,12 +46,13 @@ export default {
     computed: {
         showData() {
             this.dataSource.map(item => {
+                debugger
+
                 item.photoNames = item.photoNames.split(',').map(item => {
                     item = process.env.BASE_API + '/file/download?originalName=hh.png&realName=' + item
                     return item
                 })
             })
-            debugger
             return this.dataSource
         }
     },

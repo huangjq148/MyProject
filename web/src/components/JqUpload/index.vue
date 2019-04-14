@@ -37,7 +37,7 @@ methods.uploadSuccess = function(response, file, files) {
 }
 methods.handleRemove = function(file) {
     DataOp.deleteFile(file.id).then(response => {
-        if (response.data == 'success') {
+        if (response == 'success') {
             this.$notify({ title: '成功', message: '删除成功', type: 'success' })
         } else {
             this.$notify.error({ title: '错误', message: '删除出错' })
