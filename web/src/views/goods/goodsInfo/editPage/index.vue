@@ -6,11 +6,15 @@
             <el-form-item label="单位"> <el-input v-model="form.danwei"></el-input> </el-form-item>
             <el-form-item label="进价"> <el-input v-model="form.jinjia"></el-input> </el-form-item>
             <el-form-item label="备注"> <el-input v-model="form.remark"></el-input> </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="onSubmit">立即创建</el-button>
-                <el-button>取消</el-button>
-            </el-form-item>
+            <!--<el-form-item>-->
+            <!--<el-button type="primary" @click="onSubmit">立即创建</el-button>-->
+            <!--<el-button>取消</el-button>-->
+            <!--</el-form-item>-->
         </el-form>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="onSubmit">确 定</el-button>
+            <el-button @click="$emit('callback')">取 消</el-button>
+        </span>
     </div>
 </template>
 <script>

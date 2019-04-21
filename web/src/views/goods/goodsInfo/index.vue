@@ -1,7 +1,7 @@
 <template>
     <div class="jq-container">
         <el-row>
-            <el-col :span="24" class="toolbar">
+            <el-col class="toolbar">
                 <el-form :inline="true" :model="searchForm">
                     <el-form-item>
                         <el-input v-model="searchForm.pinming" clearable placeholder="标题"></el-input>
@@ -13,7 +13,7 @@
         </el-row>
         <jq-table ref="grid" url="/goods/list" :columns="columns"> </jq-table>
 
-        <el-dialog :visible.sync="editPageShow">
+        <el-dialog :visible.sync="editPageShow" @callback="editPageShow = false">
             <EditPage :goodsId="goodsId" @callback="handleCallback"></EditPage>
         </el-dialog>
     </div>

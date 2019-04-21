@@ -1,8 +1,8 @@
 <template>
-    <div>
+    <div class="jq-container">
         <el-row>
-            <el-form v-model="searchCondition" label-width="80">
-                <el-col span="9">
+            <el-form v-model="searchCondition" label-position="left" label-width="80">
+                <el-col :span="10">
                     <el-form-item label="日期范围">
                         <el-date-picker
                             v-model="searchCondition.dateRange"
@@ -14,8 +14,8 @@
                         </el-date-picker>
                     </el-form-item>
                 </el-col>
-                <el-col span="15">
-                    <el-form-item label="">
+                <el-col :span="10">
+                    <el-form-item>
                         <el-input
                             placeholder="请输入内容"
                             @keyup.enter.native="loadData"
@@ -46,19 +46,19 @@
 
         <jq-table ref="grid" url="/trade/list" :columns="columns"> </jq-table>
 
-        <el-dialog title="提示" :modal-append-to-body="false" :visible.sync="dialogVisible" width="80%">
-            <sellPage></sellPage>
+        <el-dialog title="提示" :visible.sync="purDialogVisible" width="80%">
+            <purchasePage></purchasePage>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <el-button @click="purDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="purDialogVisible = false">确 定</el-button>
             </span>
         </el-dialog>
 
-        <el-dialog title="提示" :modal-append-to-body="false" :visible.sync="dialogVisible1" width="80%">
+        <el-dialog title="提示" :visible.sync="sellDialogVisible" width="80%">
             <sellPage></sellPage>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+                <el-button @click="sellDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="sellDialogVisible = false">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -75,7 +75,8 @@ export default {
         this.loadData()
     },
     components: {
-        sellPage
+        sellPage,
+        purchasePage
     },
     data() {
         return {
@@ -108,16 +109,16 @@ export default {
                 searchType: '全部'
             },
             tableData: [],
-            dialogVisible: false,
-            dialogVisible1: false
+            purDialogVisible: false,
+            sellDialogVisible: false
         }
     },
     methods: {
         purchase: function() {
-            this.dialogVisible = true
+            this.purDialogVisible = true
         },
         sell: function() {
-            this.dialogVisible1 = true
+            this.sellDialogVisible = true
         },
         deleteRecords: function() {
             debugger
