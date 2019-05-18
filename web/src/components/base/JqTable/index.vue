@@ -44,7 +44,6 @@
 
 <script>
 import DataOp from '@/api/base'
-import ObjUtils from '@/utils/dataUtils'
 import { Table, Pagination, TableColumn } from 'element-ui'
 export default {
     name: 'JqTable',
@@ -74,16 +73,19 @@ export default {
                     total: 10
                 }
             }
+        },
+        condition: {
+            type: Object,
+            default: () => {}
         }
     },
     data() {
         return {
             dataSource: this.data,
-            sort: {},
-            condition: {}
+            sort: {}
         }
     },
-    computed: {},
+
     methods: {
         handleSizeChange(val) {
             this.page.size = val
@@ -94,18 +96,18 @@ export default {
             this.fetchData()
         },
         fetchData(params) {
-            ObjUtils.objectAssign(this.page, params)
+            this.$obj.objectAssign(this.page, params)
             DataOp.fetchData(this.url, {
                 page: this.page,
-                condition: this.condition,
+                condition: this.reqCondition,
                 sort: this.sort
             }).then(result => {
                 this.dataSource = result.list
                 this.page.total = result.total
             })
         },
-        searchForm(formData) {
-            Object.assign(this.condition, formData)
+        searchForm() {
+            this.page.number = 1
             this.fetchData()
         },
         sortFn({ prop, order }) {
@@ -114,6 +116,23 @@ export default {
             this.fetchData()
         }
     },
+
+    computed: {
+        reqCondition() {
+            let filterCondition = {}
+            for (let key in this.condition) {
+                if (this.condition[key] instanceof Array) {
+                    if (this.condition[key].length > 0) {
+                        filterCondition[key] = this.condition[key]
+                    }
+                } else if (this.condition[key]) {
+                    filterCondition[key] = this.condition[key]
+                }
+            }
+            return filterCondition
+        }
+    },
+
     components: {
         Table,
         Pagination,

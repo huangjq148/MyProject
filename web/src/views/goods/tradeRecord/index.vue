@@ -19,20 +19,20 @@
                         <el-input
                             placeholder="请输入内容"
                             @keyup.enter.native="loadData"
-                            v-model="searchCondition.input4Search"
+                            v-model="searchCondition.pinming"
                             class="input-with-select"
                         >
                             <el-select
                                 @change="loadData"
-                                v-model="searchCondition.searchType"
+                                v-model="searchCondition.type"
                                 slot="prepend"
                                 placeholder="请选择"
                             >
-                                <el-option label="全部" value="全部"></el-option>
+                                <el-option label="全部" value=""></el-option>
                                 <el-option label="进货" value="进货"></el-option>
                                 <el-option label="出货" value="出货"></el-option>
                             </el-select>
-                            <el-button slot="append" icon="el-icon-search"></el-button>
+                            <el-button @click="handleSearchClick" slot="append" icon="el-icon-search"></el-button>
                         </el-input>
                     </el-form-item>
                 </el-col>
@@ -44,22 +44,14 @@
             <el-button type="primary" @click="deleteRecords">删除</el-button>
         </el-row>
 
-        <jq-table ref="grid" url="/trade/list" :columns="columns"> </jq-table>
+        <jq-table :condition="searchCondition" ref="grid" url="/trade/list" :columns="columns"> </jq-table>
 
-        <el-dialog title="提示" :visible.sync="purDialogVisible" width="80%">
-            <purchasePage></purchasePage>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="purDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="purDialogVisible = false">确 定</el-button>
-            </span>
+        <el-dialog title="提示" :visible.sync="purDialogVisible" width="400px">
+            <purchasePage @callback="purDialogVisible = false"> </purchasePage>
         </el-dialog>
 
         <el-dialog title="提示" :visible.sync="sellDialogVisible" width="80%">
-            <sellPage></sellPage>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="sellDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="sellDialogVisible = false">确 定</el-button>
-            </span>
+            <sellPage @callback="sellDialogVisible = false"></sellPage>
         </el-dialog>
     </div>
 </template>
@@ -87,10 +79,10 @@ export default {
                 { prop: 'sellPrice', label: '售价' },
                 { prop: 'type', label: '类型' },
                 { prop: 'number', label: '数量' },
-                { prop: 'type', label: '金额' },
-                { prop: 'type', label: '毛利' },
-                { prop: 'type', label: '毛利率' },
-                { prop: 'type', label: '日期' },
+                { formatter: this.moneyFn, label: '金额' },
+                { formatter: this.maoLiFn, label: '毛利' },
+                { formatter: this.maoLiLvFn, label: '毛利率' },
+                { prop: 'date', label: '日期' },
                 {
                     prop: 'op',
                     options: [{ label: '编辑', func: this.handleEdit }, { label: '删除', func: this.handleDelete }],
@@ -105,8 +97,8 @@ export default {
             },
             searchCondition: {
                 dateRange: [],
-                input4Search: '',
-                searchType: '全部'
+                pinming: '',
+                type: ''
             },
             tableData: [],
             purDialogVisible: false,
@@ -114,6 +106,12 @@ export default {
         }
     },
     methods: {
+        loadData() {
+            this.$refs.grid.searchForm()
+        },
+        handleSearchClick() {
+            this.$refs.grid.searchForm()
+        },
         purchase: function() {
             this.purDialogVisible = true
         },
@@ -122,20 +120,6 @@ export default {
         },
         deleteRecords: function() {
             debugger
-        },
-        loadData() {
-            var _this = this
-            var serverUrl = _this.$store.state.serverUrl
-            var url = serverUrl + '/tradeInfo/list?userId=1&page=' + this.page.number + '&size=' + this.page.size
-            axios
-                .get(url, { params: _this.searchCondition })
-                .then(function(result) {
-                    _this.tableData = result.data.data
-                    _this.page.total = result.data.count
-                })
-                .catch(function(error) {
-                    console.log(error)
-                })
         },
         dateFormat: function(row, col) {
             var date = row[col.property]
@@ -162,3 +146,11 @@ export default {
     }
 }
 </script>
+<style>
+.el-select {
+    width: 130px;
+}
+.input-with-select .el-input-group__prepend {
+    background-color: #fff;
+}
+</style>

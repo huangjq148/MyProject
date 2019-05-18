@@ -44,7 +44,7 @@ class DbUtils {
         let params = []
         let keys = []
         let values = []
-        if (dataObj.id == '') {
+        if (dataObj.id == '' || dataObj.id == undefined) {
             dataObj.id = UUID.v1().replace(/-/g, '')
         }
         if (dataObj.createTime == '') {

@@ -10,7 +10,7 @@
             </el-form>
         </el-col>
 
-        <jq-table ref="grid" url="/photo/list" :columns="columns"> </jq-table>
+        <jq-table :condition="searchForm" ref="grid" url="/photo/list" :columns="columns"> </jq-table>
 
         <el-dialog :modal-append-to-body="false" :visible.sync="dialogVisible" width="80%" style="text-align: center;">
             <imgPage v-bind:imgNames="imgNames"></imgPage>
@@ -51,7 +51,6 @@ import imgPage from '../imgPage'
 
 import PhotoApi from '@/api/photo'
 import BaseApi from '@/api/base'
-import JqTable from '@/components/JqTable/index'
 
 export default {
     methods: {
@@ -69,7 +68,7 @@ export default {
         },
         deleteData(row) {
             PhotoApi.deletePhoto(row.id).then(result => {
-                this.$refs.grid.searchForm(this.searchForm)
+                this.$refs.grid.searchForm()
             })
         },
         dateFormater(row, col, val) {
@@ -77,7 +76,7 @@ export default {
             return this.$moment(val).format(fmt)
         },
         searchFn() {
-            this.$refs.grid.searchForm(this.searchForm)
+            this.$refs.grid.searchForm()
         },
         handleAdd() {
             this.editDialogVisible = true

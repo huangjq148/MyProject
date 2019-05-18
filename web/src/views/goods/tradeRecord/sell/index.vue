@@ -1,76 +1,68 @@
-<style>
-.el-select {
-    width: 185px;
-}
+<!--
+    @Author huangjq
+    @CreateDate 2019/4/20
+-->
 
-.el-select .el-input {
-    width: 185px;
-}
-</style>
 <template>
     <div>
-        <el-form ref="sellForm" :inline="true" label-width="100px" class="demo-form-inline">
-            <el-form-item label="品名：">
-                <el-select v-model="goodsId" filterable @change="selectFn" placeholder="请选择">
-                    <el-option
-                        v-for="item in goodsList"
-                        :key="item.id"
-                        :label="item.pinming + '-----' + item.guige"
-                        :value="item.id"
-                    >
-                    </el-option>
-                </el-select>
+        <el-form ref="sellForm" :inline="true" :model="trade" label-width="100px" class="demo-form-inline">
+            <el-form-item label="品名">
+                <jq-select
+                    url="/goods/list"
+                    v-model="trade.goodsId"
+                    value-name="id"
+                    label-remark="guige"
+                    label-name="pinming"
+                    filterable
+                    @change="selectFn"
+                ></jq-select>
             </el-form-item>
             <el-form-item label="出货日期：">
-                <div class="block">
-                    <template>
-                        <div class="block">
-                            <el-date-picker v-model="date" value-format="yyyy-MM-dd" type="date" placeholder="选择日期">
-                            </el-date-picker>
-                        </div>
-                    </template>
-                </div>
+                <el-date-picker v-model="trade.date" value-format="yyyy-MM-dd" type="date" placeholder="选择日期">
+                </el-date-picker>
             </el-form-item>
 
             <el-form-item>
                 <el-button type="primary" @click="autoInputFun">自动填入</el-button>
-                <el-button type="primary" @click="submitForm">保存</el-button>
+                <!--<el-button type="primary" @click="submitForm">保存</el-button>-->
             </el-form-item>
-            <br />
-            <el-form-item label="出货总数：">
-                <el-input v-model="form.sellTotalNum" placeholder="出货总数"></el-input>
-            </el-form-item>
-            <el-form-item label="出货单价：">
-                <el-input v-model="form.sellPerPrice" placeholder="出货单价"></el-input>
-            </el-form-item>
-            <el-form-item label="出货总价：">
-                <el-input v-model="form.sellTotalMoney" placeholder="出货总价"></el-input>
-            </el-form-item>
+            <el-row>
+                <el-form-item label="出货总数：">
+                    <el-input v-model="form.sellTotalNum" clearable placeholder="出货总数"></el-input>
+                </el-form-item>
+                <el-form-item label="出货单价：">
+                    <el-input v-model="form.sellPerPrice" clearable placeholder="出货单价"></el-input>
+                </el-form-item>
+                <el-form-item label="出货总价：">
+                    <el-input v-model="form.sellTotalMoney" clearable placeholder="出货总价"></el-input>
+                </el-form-item>
+            </el-row>
         </el-form>
         <el-table :data="sellList" style="width: 100%">
             <el-table-column label="进货日期" width="160">
                 <template slot-scope="scope">
-                    <i class="el-icon-time"></i> <span style="margin-left: 10px">{{ scope.row.date }}</span>
+                    <i class="el-icon-time"></i>
+                    <span style="margin-left: 10px">{{ scope.row.date | dataFormatter }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="进货价格" width="160">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.price" placeholder="进货价格"></el-input>
+                    {{ scope.row.price }}
                 </template>
             </el-table-column>
             <el-table-column label="进货数量" width="160">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.number" placeholder="审批人"></el-input>
+                    {{ scope.row.number }}
                 </template>
             </el-table-column>
             <el-table-column label="库存" width="160">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.nowNumber" placeholder="审批人"></el-input>
+                    {{ scope.row.nowNumber }}
                 </template>
             </el-table-column>
             <el-table-column label="出售价格" width="160">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.sellPrice" placeholder="审批人"></el-input>
+                    {{ scope.row.sellPrice }}
                 </template>
             </el-table-column>
             <el-table-column label="出售数量" width="160">
@@ -78,53 +70,24 @@
                     <el-input v-model="scope.row.sellNumber" placeholder="审批人"></el-input>
                 </template>
             </el-table-column>
-            <!--<el-table-column label="操作">-->
-            <!--<template slot-scope="scope">-->
-            <!--<el-button-->
-            <!--size="mini"-->
-            <!--@click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
-            <!--<el-button-->
-            <!--size="mini"-->
-            <!--type="danger"-->
-            <!--@click="handleDelete(scope.$index, scope.row)">删除</el-button>-->
-            <!--</template>-->
-            <!--</el-table-column>-->
         </el-table>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="$emit('callback')">取 消</el-button>
+            <el-button type="primary" @click="handleOkClick">确 定</el-button>
+        </span>
     </div>
 </template>
 
 <script>
-import axios from 'axios'
-import request from '@/utils/request'
 export default {
-    mounted: function() {
-        var _this = this
-        var serverUrl = _this.$store.state.serverUrl
-        axios
-            .get(serverUrl + '/goodsInfo/list?userId=1')
-            .then(function(response) {
-                _this.goodsList = response.data
-            })
-            .catch(function(error) {
-                console.log(error)
-            })
-
-        var data = request({
-            url: serverUrl + '/goodsInfo/list?userId=1',
-            method: 'get',
-            data: {
-                userId: 1
-            }
-        })
-        debugger
-        // this.loadData();
-    },
     data() {
         return {
+            trade: {
+                goodsId: '',
+                date: this.$moment().format('YYYY-MM-DD')
+            },
             goodsList: [],
             sellList: [],
-            goodsId: '',
-            date: '',
             form: {
                 sellTotalNum: 0,
                 sellPerPrice: 0,
@@ -133,22 +96,21 @@ export default {
             tableData: []
         }
     },
+
     methods: {
-        selectFn: function() {
-            this.loadData()
+        handleOkClick() {
+            this.submitForm()
         },
-        loadData() {
-            var _this = this
-            var serverUrl = _this.$store.state.serverUrl
-            axios
-                .get(serverUrl + '/tradeInfo/jinhuoList?userId=1&id=' + this.goodsId)
-                .then(function(response) {
-                    _this.sellList = response.filter(function(a) {
+        selectFn: function() {
+            this.$api
+                .get('/trade/jinhuoList', {
+                    userId: 1,
+                    id: this.trade.goodsId
+                })
+                .then(response => {
+                    this.sellList = response.filter(function(a) {
                         if (a.nowNumber > 0) return a
                     })
-                })
-                .catch(function(error) {
-                    console.log(error)
                 })
         },
         resetForm() {
@@ -157,32 +119,29 @@ export default {
             this.form.sellPerPrice = 0
             this.form.sellTotalMoney = 0
         },
+        getSell: function(sellInfo) {
+            return {
+                belongUserId: 1,
+                date: this.trade.date,
+                goodsId: this.trade.goodsId,
+                purchaseId: sellInfo.id,
+                price: sellInfo.price,
+                sellNumber: sellInfo.sellNumber,
+                sellPrice: sellInfo.sellPrice,
+                remark: JSON.stringify(sellInfo)
+            }
+        },
         submitForm: function() {
             var _this = this
             var sellList = this.sellList
             var serverUrl = _this.$store.state.serverUrl
             for (var index in this.sellList) {
-                if (sellList[index].sellNumber > 0 && sellList[index].sellNumber <= sellList[index].nowNumber) {
-                    axios
-                        .post(serverUrl + '/tradeInfo/chuHuoSaveOrUpdate', {
-                            userId: 1,
-                            date: this.date,
-                            data: this.sellList[index],
-                            goodsId: this.goodsId
-                        })
-                        .then(function(response) {
-                            if (response.statusCode == 'success') {
-                                _this.$message({
-                                    type: 'info',
-                                    message: `添加成功`
-                                })
-                                _this.resetForm()
-                                _this.loadData()
-                            }
-                        })
-                        .catch(function(error) {
-                            console.log(error)
-                        })
+                let sellInfo = this.sellList[index]
+                if (sellInfo.sellNumber > 0 && sellInfo.sellNumber <= sellInfo.nowNumber) {
+                    let sell = this.getSell(sellInfo)
+                    this.$api.post('/trade/sell', sell).then(res => {
+                        this.$emit('callback')
+                    })
                 }
             }
         },
@@ -214,11 +173,16 @@ export default {
                 if (sellTotalNum >= 0) {
                     if (sellTotalNum < _this.sellList[i].nowNumber) {
                         _this.sellList[i].sellNumber = sellTotalNum
-                        _this.sellList[i].sellPrice = _this.form.sellPerPrice
+                        if (sellTotalNum > 0) {
+                            _this.sellList[i].sellPrice = _this.form.sellPerPrice
+                        }
                         sellTotalNum -= sellTotalNum
                     } else {
                         _this.sellList[i].sellNumber = _this.sellList[i].nowNumber
-                        _this.sellList[i].sellPrice = sellTotalNum
+
+                        if (_this.sellList[i].nowNumber > 0) {
+                            _this.sellList[i].sellPrice = _this.form.sellPerPrice
+                        }
                         sellTotalNum -= _this.sellList[i].nowNumber
                     }
                 }
@@ -226,76 +190,20 @@ export default {
             if (sellTotalNum > 0) {
                 alert('填写的数量过大~')
             }
-        },
-        totalNumChange() {
-            var _this = this
-            var length = _this.sellList.length
-            var sellTotalNum = _this.form.sellTotalNum
-            for (var i = 0; i < length; i++) {
-                if (sellTotalNum >= 0) {
-                    if (sellTotalNum < _this.sellList[i].nowNumber) {
-                        _this.sellList[i].sellNumber = sellTotalNum
-                        sellTotalNum -= sellTotalNum
-                    } else {
-                        _this.sellList[i].sellNumber = _this.sellList[i].nowNumber
-                        sellTotalNum -= _this.sellList[i].nowNumber
-                    }
-                }
-            }
-            if (sellTotalNum > 0) {
-                alert('填写的数量过大~')
-            }
-        },
-        totalMoneyChange() {
-            var _this = this
-            var length = _this.sellList.length
-            var sellTotalNum = _this.form.sellTotalNum
-            for (var i = 0; i < length; i++) {
-                if (sellTotalNum >= 0) {
-                    if (sellTotalNum < _this.sellList[i].nowNumber) {
-                        _this.sellList[i].sellNumber = sellTotalNum
-                        sellTotalNum -= sellTotalNum
-                    } else {
-                        _this.sellList[i].sellNumber = _this.sellList[i].nowNumber
-                        sellTotalNum -= _this.sellList[i].nowNumber
-                    }
-                }
-            }
-            if (sellTotalNum > 0) {
-                alert('填写的数量过大~')
-            }
-        },
-        perPriceChange() {
-            var _this = this
-            var length = _this.sellList.length
-            var sellTotalNum = _this.form.sellTotalNum
-            for (var i = 0; i < length; i++) {
-                if (sellTotalNum >= 0) {
-                    if (sellTotalNum < _this.sellList[i].nowNumber) {
-                        _this.sellList[i].sellNumber = sellTotalNum
-                        sellTotalNum -= sellTotalNum
-                    } else {
-                        _this.sellList[i].sellNumber = _this.sellList[i].nowNumber
-                        sellTotalNum -= _this.sellList[i].nowNumber
-                    }
-                }
-            }
-            if (sellTotalNum > 0) {
-                alert('填写的数量过大~')
-            }
-        },
-        nextPage: function() {
-            var _this = this
-            _this.page.number++
-        },
-        handleSizeChange(val) {
-            this.page.size = val
-            this.loadData()
-        },
-        handleCurrentChange(val) {
-            this.page.number = val
-            this.loadData()
         }
     }
 }
 </script>
+
+<style>
+.el-select {
+    width: 220px;
+}
+
+.el-select .el-input {
+    width: 220px;
+}
+.el-input {
+    width: 220px;
+}
+</style>

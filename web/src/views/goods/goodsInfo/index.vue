@@ -11,7 +11,7 @@
                 </el-form>
             </el-col>
         </el-row>
-        <jq-table ref="grid" url="/goods/list" :columns="columns"> </jq-table>
+        <jq-table ref="grid" :condition="searchForm" url="/goods/list" :columns="columns"> </jq-table>
 
         <el-dialog :visible.sync="editPageShow" @callback="editPageShow = false">
             <EditPage :goodsId="goodsId" @callback="handleCallback"></EditPage>
@@ -26,7 +26,7 @@ import GoodsApi from '@/api/goods'
 export default {
     methods: {
         searchFn() {
-            this.$refs.grid.searchForm(this.searchForm)
+            this.$refs.grid.searchForm()
         },
         handleAdd() {
             this.goodsId = ''
@@ -38,12 +38,12 @@ export default {
         },
         handleDelete(row) {
             GoodsApi.delete(row.id).then(result => {
-                this.$refs.grid.searchForm(this.searchForm)
+                this.$refs.grid.searchForm()
             })
         },
         handleCallback() {
             this.editPageShow = false
-            this.$refs.grid.searchForm(this.searchForm)
+            this.$refs.grid.searchForm()
         }
     },
     components: { EditPage },

@@ -8,11 +8,32 @@ export default {
             data: params
         })
     },
-    save: function(url, data) {
+    post: function(url, data) {
         return request({
             url: url,
             method: 'post',
             data: data
+        })
+    },
+    put: function(url, data) {
+        return request({
+            url: url,
+            method: 'put',
+            data: data
+        })
+    },
+    get: function(url, params) {
+        return request({
+            url: url,
+            method: 'get',
+            params: params
+        })
+    },
+    delete: function(url, params) {
+        return request({
+            url: url,
+            method: 'delete',
+            params: params
         })
     },
     deleteFile(id) {

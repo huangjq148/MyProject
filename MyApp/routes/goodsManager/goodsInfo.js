@@ -4,7 +4,6 @@
 var express = require('express')
 var router = express.Router()
 let { Utils, DbUtilsClass, ResponseResult } = require('../commons')
-// var query = require('../commons/db.js')
 const DbUtils = new DbUtilsClass('t_goods')
 
 var goodsInfo = new Object()

@@ -222,61 +222,14 @@ router.get('/countTradeRecord', function(req, res, next) {
     })
 })
 
-router.post('/jinHuoSaveOrUpdate', function(req, res, next) {
-    var id = req.body.id
-    var shangpinid = req.body.shangpinid
-    var shuliang = req.body.shuliang
-    var jiage = req.body.jiage
-    var riqi = req.body.riqi
-    var remark = req.body.remark
-    var sql = ''
-    var params
-
-    if (id == '' || id == undefined) {
-        var userId = req.session.currentUser.id
-        sql =
-            "insert into t_purchase_record(id,goodsId,number,price,date,remark,belongUserId) values(REPLACE(UUID(),'-',''),?,?,?,?,?,?)"
-        params = [shangpinid, shuliang, jiage, riqi, remark, userId]
-    } else {
-        sql = 'update t_purchase_record set goodsId=?,number=?,price=?,date=?,remark=? where id=?'
-        params = [shangpinid, shuliang, jiage, riqi, remark, id]
-    }
-    query(sql, params, function(qerr, vals, fields) {
-        if (qerr == null) {
-            res.end('success')
-        } else {
-            console.log(qerr)
-        }
+router.post('/purchase', function(req, res, next) {
+    DbUtils.insert(req.body, 't_purchase_record').then(() => {
+        res.end(ResponseResult.success())
     })
 })
-router.post('/chuHuoSaveOrUpdate', function(req, res, next) {
-    var userId = req.param('userId')
-    var id = req.body.id
-    var data = req.body.data
-    var goodsId = data.goodsId
-    var purchaseId = data.id
-    var price = data.price
-    var date = req.body.date
-    var remark = data.remark
-    var sellNumber = data.sellNumber
-    var sellPrice = data.sellPrice
-    var sql = ''
-    var params
-
-    if (id == '' || id == undefined) {
-        sql =
-            "insert into t_sell_record(id,goodsId,purchaseId,price,date,sellNumber,sellPrice,remark,belongUserId) values(REPLACE(UUID(),'-',''),?,?,?,?,?,?,?,?)"
-        params = [goodsId, purchaseId, price, date, sellNumber, sellPrice, remark, userId]
-    } else {
-        sql = 'update t_sell_record set goodsId=?,number=?,price=?,date=?,sellPrice=?,sellNumber=?,remark=? where id=?'
-        params = [shangpinid, shuliang, jiage, riqi, sellPrice, sellNumber, remark, id]
-    }
-    query(sql, params, function(qerr, vals, fields) {
-        if (qerr == null) {
-            res.end('success')
-        } else {
-            console.log(qerr)
-        }
+router.post('/sell', function(req, res, next) {
+    DbUtils.insert(req.body, 't_sell_record').then(() => {
+        res.end(ResponseResult.success())
     })
 })
 

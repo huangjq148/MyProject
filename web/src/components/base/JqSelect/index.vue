@@ -3,24 +3,16 @@
     @CreateDate 2019/4/20
 -->
 <template>
-    <el-select
-        :value="selectValue"
-        :size="size"
-        @input="change($event)"
-        ref="select"
-        placeholder="请选择"
-        v-bind="$attrs"
-        v-on="$listeners"
-    >
-        <el-option v-for="item in showOptions" :key="item[value]" :label="item[label]" :value="item[value]">
-            <span style="float: left">{{ item[label] }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">{{ item['guige'] }}</span>
+    <el-select class="dg-select" :value="value" v-bind="$attrs" @change="handleChange" v-on="listeners">
+        <el-option v-for="item in showOptions" :key="item[valueName]" :label="item[labelName]" :value="item[valueName]">
+            <span style="float: left">{{ item[labelName] }}</span>
+            <span style="float: right; color: #8492a6; font-size: 13px">{{ item[labelRemark] }}</span>
         </el-option>
     </el-select>
 </template>
 
 <script>
-import { Select } from 'element-ui'
+import { Select, Option } from 'element-ui'
 import DataOp from '@/api/base'
 let methods = {}
 for (let method in Select.methods) {
@@ -30,34 +22,65 @@ export default {
     name: 'JqSelect',
     data() {
         return {
-            dataSource: [],
-            data: [],
+            dataSource: this.data,
             selectValue: '',
             size: ''
         }
     },
+
+    components: {
+        ElSelect: Select,
+        ElOption: Option
+    },
+
     props: {
-        url: '',
         value: {
-            type: String,
-            default: 'value',
-            required: false
+            type: [String, Array],
+            default() {
+                return ''
+            },
+            required: true
         },
-        label: {
+        // 选项配置数据
+        data: {
+            type: Array,
+            default() {
+                return []
+            }
+        },
+        // 值的字段名称
+        valueName: {
+            type: String,
+            default: 'value'
+        },
+        // 显示的字段名称
+        labelName: {
+            type: String,
+            default: 'label'
+        },
+        url: '',
+        labelRemark: {
             type: String,
             default: 'label',
             required: false
         }
     },
     computed: {
+        listeners() {
+            let newListeners = {}
+            for (let key in this.$listeners) {
+                if (key !== 'change' && key !== 'input') {
+                    newListeners[key] = this.$listeners[key]
+                }
+            }
+            return newListeners
+        },
         showOptions() {
             return this.dataSource || this.data
-        },
-        change: function(val) {
-            this.$emit('input', val)
         }
     },
     methods: {
+        ...methods,
         loadData() {
             if (this.url) {
                 DataOp.fetchData(this.url).then(res => {
@@ -65,8 +88,9 @@ export default {
                 })
             }
         },
-        change: function(val) {
+        handleChange: function(val) {
             this.$emit('input', val)
+            this.$emit('change', val)
         }
     },
     created() {

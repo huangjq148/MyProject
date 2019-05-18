@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
-import moment from 'moment'
 import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/zh-CN'
 
@@ -15,18 +14,11 @@ import store from './store'
 
 import '@/icons' // icon
 import '@/components'
-import utils from '@/utils'
+import '@/utils'
 // import '@/permission' // permission control
 
 Vue.use(ElementUI, { locale })
 Vue.use(Vuex)
-
-Object.defineProperty(Vue.prototype, '$moment', { value: moment })
-Object.defineProperty(Vue.prototype, '$utils', { value: utils })
-
-Vue.filter('dataFormatter', function(value, fmt) {
-    return moment(value).format(fmt)
-})
 
 Vue.config.productionTip = false
 
