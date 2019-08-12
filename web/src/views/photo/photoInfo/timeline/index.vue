@@ -58,7 +58,7 @@ export default {
     },
     created() {
         BaseApi.fetchData('/photo/list', { page: { size: 100, number: 1 } }).then(result => {
-            this.dataSource = result.data.list
+            this.dataSource = result.data.resultObject
         })
     }
 }

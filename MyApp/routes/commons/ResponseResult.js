@@ -5,22 +5,25 @@
 class ResponseResult {
     constructor() {
         this.result = {
-            statusCode: 2000,
+            code: 200,
+            data: {},
             message: '操作成功'
         }
     }
 
-    success(message) {
-        this.result.statusCode = 2000
+    success(data, message) {
+        this.result.code = 200
+        this.result.data = data
         this.result.message = message || '操作成功'
         return JSON.stringify(this.result)
     }
 
-    fail(message) {
-        this.result.statusCode = 3000
+    fail(data, message) {
+        this.result.code = 300
+        this.result.data = data
         this.result.message = message || '操作失败'
         return JSON.stringify(this.result)
     }
 }
 
-module.exports = ResponseResult
+module.exports = new ResponseResult()

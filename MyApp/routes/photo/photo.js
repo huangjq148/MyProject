@@ -10,8 +10,7 @@ let photo = {
     id: '',
     title: '',
     description: '',
-    photoDate: '',
-    createTime: ''
+    photoDate: ''
 }
 let file = {
     id: '',
@@ -50,12 +49,12 @@ router.post('/saveOrUpdate', function(req, res, next) {
 })
 
 router.post('/list', function(req, res, next) {
-    DbUtils.queryList(req.body)
+    DbUtils.queryPage(req.body)
         .then(result => {
-            res.end(JSON.stringify(result))
+            res.end(ResponseResult.success(result))
         })
         .catch(reason => {
-            res.end(JSON.stringify({ errMsg: reason }))
+            res.end({ errMsg: reason })
         })
 })
 
@@ -63,15 +62,24 @@ router.get('/listView', function(req, res, next) {
     res.sendfile('views/goodsManager/new/goodsList.html')
 })
 
-router.post('/edit/:id', function(req, res, next) {
+router.get("/list/:id",function(req,res){
+    let id = req.params.id;
+    DbUtils.queryList({whereMap:{recordId:id}},"t_upload_file").then(result=>{
+        res.send(ResponseResult.success(result))
+    }).catch(err=>{
+        debugger;
+    })
+})
+
+router.get('/edit/:id', function(req, res, next) {
     let id = req.params.id
     if (id != '' && id != undefined) {
         let photoInfoFn = DbUtils.queryObj({ id }),
-            filesFn = DbUtils.queryList({ condition: { recordId: id } }, 't_upload_file')
+            filesFn = DbUtils.queryList({ whereMap: { recordId: id } }, 't_upload_file')
         Promise.all([photoInfoFn, filesFn])
             .then(result => {
                 result[0]['files'] = result[1]['list']
-                res.end(JSON.stringify({ info: result[0] }))
+                res.end(ResponseResult.success({ info: result[0],fileList: result[1] }))
             })
             .catch(reason => {
                 res.end(reason)

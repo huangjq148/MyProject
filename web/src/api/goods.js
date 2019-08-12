@@ -13,7 +13,7 @@ export default {
     },
     save: function(data) {
         return request({
-            url: '/goods/save',
+            url: '/goods',
             method: 'post',
             data: data
         })
