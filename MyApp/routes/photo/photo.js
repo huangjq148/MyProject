@@ -97,4 +97,10 @@ router.get('/delete/:id', function(req, res, next) {
     })
 })
 
+router.get('/latest', function(req,res){
+    DbUtils.query("select * from t_upload_file ORDER BY createtime desc limit 1").then(result=>{
+        res.end(ResponseResult.success(result[0]))
+    })
+})
+
 module.exports = router

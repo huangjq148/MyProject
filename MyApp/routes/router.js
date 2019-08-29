@@ -17,9 +17,9 @@ var article = require('./article')
 router.use('/login', login)
 /* GET home page. */
 router.get('/*', function(req, res, next) {
-    // if(req.session.currentUser == undefined){
-    //     res.redirect('/login/toLogin');
-    // }
+    if(req.session.curUser == undefined){
+        res.redirect('/login/toLogin');
+    }
     next()
 })
 

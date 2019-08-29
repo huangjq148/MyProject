@@ -11,10 +11,10 @@ class ResponseResult {
         }
     }
 
-    success(data, message) {
+    success(data = {}, message = '操作成功') {
         this.result.code = 200
         this.result.data = data
-        this.result.message = message || '操作成功'
+        this.result.message = message
         return JSON.stringify(this.result)
     }
 

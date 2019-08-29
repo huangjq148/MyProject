@@ -65,19 +65,17 @@ class DbUtils {
 		if (dataObj.id == '' || dataObj.id == undefined) {
 			dataObj.id = UUID.v1().replace(/-/g, '')
 		}
-		if (dataObj.createTime == '') {
-			dataObj.createTime = new Date()
+		if (!dataObj.createTime) {
+			dataObj.createTime = moment().format("YYYY-MM-DD HH:mm:ss")
 		}
+		dataObj.createUser = this.curUser.username
 		for (let key in dataObj) {
-			if (dataObj[key]) {
+			if (dataObj[key] || dataObj[key] === 0) {
 				keys.push(key)
 				values.push('?')
 				params.push(dataObj[key])
 			}
 		}
-		keys.push('createTime')
-		values.push('?')
-		params.push(moment().format("YYYY-MM-DD HH:mm:SS"))
 		sql = sql.replace('{{keys}}', keys.join(','))
 		sql = sql.replace('{{values}}', values.join(','))
 		return this.query(sql, params)
@@ -88,6 +86,11 @@ class DbUtils {
 		let params = []
 		let updateSql = []
 		let whereSql = ''
+		
+		if (!dataObj.updateTime) {
+			dataObj.updateTime = moment().format("YYYY-MM-DD HH:mm:ss")
+		}
+		dataObj.updateUser = this.curUser.username
 		for (let key in dataObj) {
 			if (dataObj[key]) {
 				updateSql.push(` ${key}=?`)
@@ -100,7 +103,7 @@ class DbUtils {
 				params.push(updateParams[key])
 			}
 		}
-		updateSql.push(` updateTime="${moment().format("YYYY-MM-DD HH:mm:SS")}"`)
+		updateSql.push(` updateTime="${moment().format("YYYY-MM-DD HH:mm:ss")}"`)
 		sql = sql.replace('{{updateSql}}', updateSql)
 		sql = sql.replace('{{whereSql}}', whereSql)
 		return this.query(sql, params).catch(err => {
@@ -141,7 +144,7 @@ class DbUtils {
 			sortSql = '',
 			limitSql = ''
 		
-		whereMapSql = this.generateWhereSql(whereMap);
+		whereMapSql = this.generateWhereSql(whereMap, params);
 		
 		if (sort && sort.value) {
 			sortSql += ` order by ${sort.key} ${Utils.sortable[sort.value]}`

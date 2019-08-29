@@ -9,10 +9,11 @@ router.post('/login', function (req, res, next) {
 		username: req.body.username,
 		password: req.body.password
 	}
-	DbUtils.queryObj(queryParams).then(function (result) {
-		DbUtils.queryObj({userId: result.id}, "t_user_info").then(function (userInfo) {
+	DbUtils.queryObj(queryParams,"t_user_account").then(function (result) {
+		DbUtils.queryObj({userId: result.id}).then(function (userInfo) {
 			req.session.curUser = {
 				id: result.id,
+				username: result.username,
 				name: userInfo.name,
 				sex: userInfo.sex,
 				avatar: userInfo.avatar
@@ -30,6 +31,19 @@ router.get('/info', function (req, res, next) {
 router.get('/login', function (req, res, next) {
 	res.send('login');
 });
+
+router.post("/list", function (req, res, next) {
+	DbUtils.queryPage(req.body).then(result => {
+		res.end(ResponseResult.success(result))
+	})
+})
+router.post("/account/list", function (req, res, next) {
+	DbUtils.queryPage(req.body,"t_user_account").then(result => {
+		res.end(ResponseResult.success(result))
+	}).catch(reason => {
+		debugger;
+	})
+})
 
 router.post('/logout', function (req, res, next) {
 	req.session.curUser = {}

@@ -12,12 +12,20 @@ let utils = {
     getParameter(paramName, req) {
         return req.body[paramName] || req.query[paramName]
     },
+    cleanData(targetObj){
+        for (let key in targetObj) {
+            if(typeof targetObj[key] === "number"){
+                targetObj[key] = 0;
+            }else if(typeof targetObj[key] === "string"){
+                targetObj[key] = ""
+            }
+        }
+    },
     copyValue(targetObj, sourceObj) {
+        this.cleanData(targetObj)
         for (let key in targetObj) {
             if (sourceObj[key]) {
                 targetObj[key] = sourceObj[key]
-            } else {
-                targetObj[key] = ''
             }
         }
         return targetObj
