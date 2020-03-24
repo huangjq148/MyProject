@@ -24,7 +24,7 @@ var pool = mysql.createPool({
 	host: 'localhost',
 	user: 'root',
 	password: 'root',
-	database: 'myweb',
+	database: 'recorder',
 	port: 3306
 })
 
@@ -32,10 +32,24 @@ class DbUtils {
 	constructor(tableName) {
 		this.tableName = tableName
 	}
+
+	replaceWenHao(sql, params){
+		let i = 0
+		// let params = ["d818acf06c0a11eaa60bcb95426e4e52","h6u77d",7,"6hgy",7,7,"2020-03-22 15:37:55","d818acf06c0a11eaa60bcb95426e4e52"];
+		let result = sql.replace(/\?/g,(item,index,c,d,e)=>{
+			let arg = params[i++]
+			if(isNaN(arg)){
+				arg = '"'+arg+'"'
+			}
+			return arg
+		})
+		console.log("result---",result)
+	}
 	
 	query(sql, params) {
 		console.log('sql:' + sql)
 		console.log('params:' + params)
+		this.replaceWenHao(sql, params)
 		return new Promise(function (resolve, reject) {
 			pool.getConnection(function (err, conn) {
 				if (err) {
@@ -49,6 +63,7 @@ class DbUtils {
 						if (qerr == null) {
 							resolve(vals, fields)
 						} else {
+							console.error(qerr)
 							reject(qerr)
 						}
 					})
@@ -68,7 +83,9 @@ class DbUtils {
 		if (!dataObj.createTime) {
 			dataObj.createTime = moment().format("YYYY-MM-DD HH:mm:ss")
 		}
-		dataObj.createUser = this.curUser.username
+		if(this.curUser){
+			dataObj.createUser = this.curUser.username
+		}
 		for (let key in dataObj) {
 			if (dataObj[key] || dataObj[key] === 0) {
 				keys.push(key)
@@ -81,8 +98,8 @@ class DbUtils {
 		return this.query(sql, params)
 	}
 	
-	update(dataObj, updateParams) {
-		let sql = `update ${this.tableName} set {{updateSql}} where 1=1 {{whereSql}}`
+	update(dataObj, updateParams, tableName) {
+		let sql = `update ${tableName || this.tableName} set {{updateSql}} where 1=1 {{whereSql}}`
 		let params = []
 		let updateSql = []
 		let whereSql = ''
@@ -90,9 +107,11 @@ class DbUtils {
 		if (!dataObj.updateTime) {
 			dataObj.updateTime = moment().format("YYYY-MM-DD HH:mm:ss")
 		}
-		dataObj.updateUser = this.curUser.username
+		if(this.curUser){
+			dataObj.createUser = this.curUser.username
+		}
 		for (let key in dataObj) {
-			if (dataObj[key]) {
+			if (dataObj[key] || dataObj[key] === 0) {
 				updateSql.push(` ${key}=?`)
 				params.push(dataObj[key])
 			}
@@ -103,7 +122,6 @@ class DbUtils {
 				params.push(updateParams[key])
 			}
 		}
-		updateSql.push(` updateTime="${moment().format("YYYY-MM-DD HH:mm:ss")}"`)
 		sql = sql.replace('{{updateSql}}', updateSql)
 		sql = sql.replace('{{whereSql}}', whereSql)
 		return this.query(sql, params).catch(err => {
@@ -163,8 +181,6 @@ class DbUtils {
 		return Promise.all([contentFn, pageFn])
 			.then(result => {
 				return {resultObject: result[0], totalRecord: result[1][0]['total']}
-				
-				// return { list: result[0], total: result[1][0]['total'] }
 			})
 			.catch(reason => {
 				return reason
@@ -182,6 +198,7 @@ class DbUtils {
 				op = SEARCH_OPERATOR[key.substr(key.indexOf("_") + 1)]
 				newKey = tmpArr[0]
 			}
+
 			if (whereMap[key]) {
 				if (op === "like") {
 					whereMapSql += ` and ${newKey} like concat('%',?,'%') `
@@ -216,7 +233,27 @@ class DbUtils {
 				return reason
 			})
 	}
-	
+
+	/**
+	 * @param data	需要修改的数据
+	 * @param whereMap 条件	{prop1: 3}
+	 * @param tableName	表格名
+	 */
+	increase(data, whereMap, tableName){
+		let querySql = `select * from ${tableName || this.tableName} where 1=1 `
+		let updateSql = `update ${tableName || this.tableName} set {{update}} where 1=1 `
+		let whereMapSql = ""
+		let updateData = [];
+		let params = [];
+		for (let key in data) {
+			updateData.push(` ${key} = ${key} + ?`)
+			params.push(data[key])
+		}
+		whereMapSql = this.generateWhereSql(whereMap, params)
+		updateSql += whereMapSql;
+		updateSql = updateSql.replace("{{update}}",updateData.join(","))
+		return this.query(updateSql, params)
+	}
 }
 
 module.exports = DbUtils

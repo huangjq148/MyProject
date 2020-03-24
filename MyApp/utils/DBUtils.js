@@ -3,7 +3,7 @@
  */
 var mysql = require('mysql');
 
-var TEST_DATABASE = 'myWeb';
+var TEST_DATABASE = 'recorder';
 var TEST_TABLE = 'user';
 
 //创建连接

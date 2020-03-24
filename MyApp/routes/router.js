@@ -16,12 +16,12 @@ var article = require('./article')
 
 router.use('/login', login)
 /* GET home page. */
-router.get('/*', function(req, res, next) {
-    if(req.session.curUser == undefined){
-        res.redirect('/login/toLogin');
-    }
-    next()
-})
+// router.get('/*', function(req, res, next) {
+//     if(req.session.curUser == undefined){
+//         res.redirect('/login/toLogin');
+//     }
+//     next()
+// })
 
 
 router.use('/index', index)

@@ -19,6 +19,7 @@ class ResponseResult {
     }
 
     fail(data, message) {
+        console.error(data)
         this.result.code = 300
         this.result.data = data
         this.result.message = message || '操作失败'

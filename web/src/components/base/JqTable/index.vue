@@ -102,8 +102,10 @@ export default {
                 condition: this.reqCondition,
                 sort: this.sort
             }).then(result => {
-                this.dataSource = result.list
-                this.page.total = result.total
+                this.dataSource = result.data.resultObject
+                this.page.total = result.data.totalRecord
+                // this.dataSource = result.list
+                // this.page.total = result.total
             })
         },
         searchForm() {

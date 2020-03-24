@@ -15,7 +15,7 @@ goodsInfo.jinjia = ''
 goodsInfo.remark = ''
 
 router.post('/list', function(req, res, next) {
-    DbUtils.queryPage(req.body, 'vw_goodsInfo').then(result => {
+    DbUtils.queryPage(req.body, 't_goods').then(result => {
         res.end(ResponseResult.success(result))
     })
 })
