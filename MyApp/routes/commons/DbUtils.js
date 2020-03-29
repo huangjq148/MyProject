@@ -43,13 +43,14 @@ class DbUtils {
 			}
 			return arg
 		})
-		console.log("result---",result)
+		return result;
 	}
 	
 	query(sql, params) {
 		console.log('sql:' + sql)
 		console.log('params:' + params)
-		this.replaceWenHao(sql, params)
+		console.log("result---",this.replaceWenHao(sql, params))
+
 		return new Promise(function (resolve, reject) {
 			pool.getConnection(function (err, conn) {
 				if (err) {
@@ -124,9 +125,7 @@ class DbUtils {
 		}
 		sql = sql.replace('{{updateSql}}', updateSql)
 		sql = sql.replace('{{whereSql}}', whereSql)
-		return this.query(sql, params).catch(err => {
-			return err
-		})
+		return this.query(sql, params)
 	}
 	
 	delete(paramsObj, tableName) {
