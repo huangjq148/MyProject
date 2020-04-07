@@ -9,6 +9,7 @@ const DbUtils = new DbUtilsClass('t_article')
 let article = {
 	id:"",
 	title:"",
+	type:"",
 	content:"",
 	clickCount: 0
 }
@@ -37,7 +38,6 @@ router.delete("/:id", function (req, res) {
 
 router.post("/", function (req, res) {
 	Utils.copyValue(article, req.body)
-	DbUtils.ccc="casc"
 	DbUtils.insert(article).then(function () {
 		res.send(ResponseResult.success({}))
 	})

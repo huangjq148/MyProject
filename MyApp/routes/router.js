@@ -1,18 +1,19 @@
 /**
  * Created by Administrator on 2017/1/2 0002.
  */
-var express = require('express')
-var router = express.Router()
-var bodyParser = require('body-parser')
-var user = require('./users/users')
-var index = require('./index')
-var login = require('./login')
-var demos = require('./demos/demos')
-var goodsInfo = require('./goodsManager/goodsInfo')
-var tradeInfo = require('./goodsManager/tradeInfo')
-var photo = require('./photo/photo')
-var file = require('./file')
-var article = require('./article')
+let express = require('express')
+let router = express.Router()
+let bodyParser = require('body-parser')
+let user = require('./users/users')
+let index = require('./index')
+let login = require('./login')
+let demos = require('./demos/demos')
+let goodsInfo = require('./goodsManager/goodsInfo')
+let tradeInfo = require('./goodsManager/tradeInfo')
+let photo = require('./photo/photo')
+let file = require('./file')
+let article = require('./article')
+let articleType = require('./article/type')
 
 router.use('/login', login)
 /* GET home page. */
@@ -32,5 +33,6 @@ router.use('/trade', tradeInfo)
 router.use('/photo', photo)
 router.use('/file', file)
 router.use('/article', article)
+router.use('/articleType', articleType)
 
 module.exports = router
