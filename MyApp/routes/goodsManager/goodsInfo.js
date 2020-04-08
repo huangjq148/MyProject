@@ -3,7 +3,7 @@
  */
 var express = require('express')
 var router = express.Router()
-let { Utils, DbUtilsClass, ResponseResult } = require('../commons')
+let { Utils, DbUtilsClass, ResponseResult } = require('../../utils')
 const DbUtils = new DbUtilsClass('t_goods')
 
 var goodsInfo = new Object()

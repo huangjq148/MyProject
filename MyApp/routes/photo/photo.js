@@ -4,7 +4,7 @@
 let express = require('express')
 let router = express.Router()
 let UUID = require('node-uuid')
-let { Utils, DbUtilsClass, ResponseResult } = require('../commons')
+let { Utils, DbUtilsClass, ResponseResult } = require('../../utils')
 let DbUtils = new DbUtilsClass('t_photo')
 let photo = {
     id: '',

@@ -4,7 +4,7 @@
  */
 var express = require('express');
 var router = express.Router();
-let {Utils, DbUtilsClass, ResponseResult} = require('../commons')
+let {Utils, DbUtilsClass, ResponseResult} = require('../../utils')
 const DbUtils = new DbUtilsClass('t_article')
 let article = {
 	id:"",
@@ -18,36 +18,31 @@ router.all("*", function(req, res, next){
 	next()
 })
 
-router.post('/list', function (req, res, next) {
-	DbUtils.queryPage(req.body).then(result => {
-		res.end(ResponseResult.success(result))
-	})
+router.post('/list', async function (req, res, next) {
+	let result = await DbUtils.queryPage(req.body)
+	res.end(ResponseResult.success(result))
 })
 
-router.get('/:id', function (req, res, next) {
-	DbUtils.queryObj({id: req.params.id}).then(result => {
-		res.end(ResponseResult.success(result))
-	})
+router.get('/:id', async function (req, res, next) {
+	let result = await DbUtils.queryObj({id: req.params.id})
+	res.end(ResponseResult.success(result))
 })
 
-router.delete("/:id", function (req, res) {
-	DbUtils.delete({id:req.params.id}).then(function () {
-		res.send(ResponseResult.success({}))
-	})
+router.delete("/:id", async function (req, res) {
+	await DbUtils.delete({id:req.params.id})
+	res.send(ResponseResult.success({}))
 })
 
-router.post("/", function (req, res) {
+router.post("/", async function (req, res) {
 	Utils.copyValue(article, req.body)
-	DbUtils.insert(article).then(function () {
-		res.send(ResponseResult.success({}))
-	})
+	await DbUtils.insert(article)
+	res.send(ResponseResult.success({}))
 })
 
-router.put("/", function (req, res) {
+router.put("/", async function (req, res) {
 	Utils.copyValue(article, req.body)
-	DbUtils.update(article,{id:article.id}).then(function () {
-		res.send(ResponseResult.success({}))
-	})
+	await DbUtils.update(article,{id:article.id})
+	res.send(ResponseResult.success({}))
 })
 
 module.exports = router;

@@ -4,10 +4,8 @@
 var express = require('express')
 var UUID = require('uuid')
 var router = express.Router()
-var query = require('../commons/db.js')
-var utils = require('../commons/utils.js')
-let { Utils, DbUtilsClass, ResponseResult } = require('../commons')
-// var query = require('../commons/db.js')
+var utils = require('../../utils/Utils.js')
+let { Utils, DbUtilsClass, ResponseResult } = require('../../utils')
 const DbUtils = new DbUtilsClass('t_trade_record')
 
 let tradeInfo = {

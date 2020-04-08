@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 // var DBUtils = require('../../utils/DBUtils');
-let {Utils, DbUtilsClass, ResponseResult} = require('../commons')
+let {Utils, DbUtilsClass, ResponseResult} = require('../../utils')
 const DbUtils = new DbUtilsClass('t_user')
 /* GET users listing. */
 router.post('/login', function (req, res, next) {
@@ -21,7 +21,7 @@ router.post('/login', function (req, res, next) {
 			res.send(ResponseResult.success(result));
 		})
 	});
-	
+
 });
 
 router.get('/info', function (req, res, next) {

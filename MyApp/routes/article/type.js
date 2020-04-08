@@ -4,11 +4,13 @@
  */
 const express = require('express');
 const router = express.Router();
-let {Utils, DbUtilsClass, ResponseResult} = require('../commons')
+let {Utils, DbUtilsClass, ResponseResult} = require('../../utils')
 const DbUtils = new DbUtilsClass('t_article_type')
 let article = {
     id:"",
-    name:""
+    name:"",
+    photoPath:"",
+    description:"",
 }
 router.all("*", function(req, res, next){
     DbUtils.curUser = req.session.curUser

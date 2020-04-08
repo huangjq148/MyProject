@@ -3,7 +3,6 @@ var http = require('http')
 let UUID = require('node-uuid')
 let Utils = require('./Utils')
 let moment = require("moment")
-let ResponseResult = require('./ResponseResult')
 // EQ 就是 EQUAL等于
 // NE就是 NOT EQUAL不等于
 // GT 就是 GREATER THAN大于
@@ -45,7 +44,7 @@ class DbUtils {
 		})
 		return result;
 	}
-	
+
 	query(sql, params) {
 		console.log('sql:' + sql)
 		console.log('params:' + params)
@@ -72,7 +71,7 @@ class DbUtils {
 			})
 		})
 	}
-	
+
 	insert(dataObj, tableName) {
 		let sql = `insert into ${tableName || this.tableName}({{keys}}) values({{values}})`
 		let params = []
@@ -98,13 +97,13 @@ class DbUtils {
 		sql = sql.replace('{{values}}', values.join(','))
 		return this.query(sql, params)
 	}
-	
+
 	update(dataObj, updateParams, tableName) {
 		let sql = `update ${tableName || this.tableName} set {{updateSql}} where 1=1 {{whereSql}}`
 		let params = []
 		let updateSql = []
 		let whereSql = ''
-		
+
 		if (!dataObj.updateTime) {
 			dataObj.updateTime = moment().format("YYYY-MM-DD HH:mm:ss")
 		}
@@ -127,7 +126,7 @@ class DbUtils {
 		sql = sql.replace('{{whereSql}}', whereSql)
 		return this.query(sql, params)
 	}
-	
+
 	delete(paramsObj, tableName) {
 		let sql = `delete from ${tableName || this.tableName} where 1=1 `
 		let params = []
@@ -139,7 +138,7 @@ class DbUtils {
 		}
 		return this.query(sql, params)
 	}
-	
+
 	queryList(queryParams, tableName) {
 		let whereMap = queryParams.whereMap;
 		let params = [];
@@ -148,33 +147,33 @@ class DbUtils {
 		sql += whereMapSql;
 		return this.query(sql, params);
 	}
-	
+
 	queryPage(queryParams, tableName) {
 		let whereMap = queryParams.whereMap,
 			sort = queryParams.sort,
 			params = [],
 			currentPage = queryParams.currentPage,
 			pageSize = queryParams.pageSize
-		
+
 		let sql = `select * from ${tableName || this.tableName} where 1=1 `
 		let whereMapSql,
 			sortSql = '',
 			limitSql = ''
-		
+
 		whereMapSql = this.generateWhereSql(whereMap, params);
-		
+
 		if (sort && sort.value) {
 			sortSql += ` order by ${sort.key} ${Utils.sortable[sort.value]}`
 		}
 		if (!sortSql) {
 			sortSql += ` order by createTime desc  `
 		}
-		
+
 		if (pageSize) {
 			let startIndex = (currentPage - 1) * pageSize
 			limitSql = ` limit ${startIndex},${pageSize}`
 		}
-		
+
 		let contentFn = this.query(sql + whereMapSql + sortSql + limitSql, params)
 		let pageFn = this.query(`select count(*) total from (${sql + whereMapSql}) allRecord`, params)
 		return Promise.all([contentFn, pageFn])
@@ -185,14 +184,14 @@ class DbUtils {
 				return reason
 			})
 	}
-	
+
 	generateWhereSql(whereMap, params) {
 		let whereMapSql = ""
 		for (let key in whereMap) {
 			let op = "="
 			let tmpArr = key.split("_");
 			let newKey = key;
-			
+
 			if (tmpArr.length > 1) {
 				op = SEARCH_OPERATOR[key.substr(key.indexOf("_") + 1)]
 				newKey = tmpArr[0]
@@ -209,7 +208,7 @@ class DbUtils {
 		}
 		return whereMapSql;
 	}
-	
+
 	queryObj(params, tableName) {
 		let sql = `select * from ${tableName || this.tableName} where 1=1 `,
 			whereMapSql = '',

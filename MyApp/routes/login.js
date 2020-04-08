@@ -3,8 +3,8 @@
  */
 var express = require('express');
 var router = express.Router();
-var utils = require("./commons/utils");
-var query = require("./commons/db.js");
+var utils = require("../utils/Utils");
+var query = require("../utils/DbUtils.js");
 
 /* GET home page. */
 router.get('/toLogin', function (req, res, next) {
