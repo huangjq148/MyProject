@@ -12,12 +12,6 @@ const app = express()
 const cors = require('cors')
 app.use(cors())
 
-const ROOT_PATH = process.cwd();
-require('best-require')(ROOT_PATH, {
-    utils: ROOT_PATH + '/utils',
-    controllers: ROOT_PATH + '/application/apis/controllers'
-});
-
 app.use(session({
     secret: 'hubwiz app', //secret的值建议使用随机字符串
     cookie: { maxAge: 60 * 1000 * 60 } // 过期时间（毫秒）

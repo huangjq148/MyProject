@@ -3,6 +3,11 @@ var router = express.Router();
 // var DBUtils = require('../../utils/DBUtils');
 let {Utils, DbUtilsClass, ResponseResult} = require('../../utils')
 const DbUtils = new DbUtilsClass('t_user_account')
+let account = {
+	id:"",
+	username:"",
+	password:""
+}
 /* GET users listing. */
 router.post('/login', function (req, res, next) {
 	let queryParams = {
@@ -21,32 +26,33 @@ router.post('/login', function (req, res, next) {
 			res.send(ResponseResult.success(result));
 		})
 	});
-
 });
 
-router.get('/info', function (req, res, next) {
-	res.send(ResponseResult.success(req.session.curUser));
-});
-
-router.get('/login', function (req, res, next) {
-	res.send('login');
-});
-
-router.post("/list",async function (req, res, next) {
+router.post('/list', async function (req, res, next) {
 	let result = await DbUtils.queryPage(req.body)
 	res.end(ResponseResult.success(result))
 })
-router.post("/account/list", function (req, res, next) {
-	DbUtils.queryPage(req.body,"t_user_account").then(result => {
-		res.end(ResponseResult.success(result))
-	}).catch(reason => {
-		debugger;
-	})
+
+router.get('/:id', async function (req, res, next) {
+	let result = await DbUtils.queryObj({id: req.params.id})
+	res.end(ResponseResult.success(result))
 })
 
-router.post('/logout', function (req, res, next) {
-	req.session.curUser = {}
-	res.send(ResponseResult.success('logout'));
-});
+router.delete("/:id", async function (req, res) {
+	await DbUtils.delete({id:req.params.id})
+	res.send(ResponseResult.success({}))
+})
+
+router.post("/", async function (req, res) {
+	Utils.copyValue(account, req.body)
+	await DbUtils.insert(account)
+	res.send(ResponseResult.success({}))
+})
+
+router.put("/", async function (req, res) {
+	Utils.copyValue(account, req.body)
+	await DbUtils.update(account,{id:account.id})
+	res.send(ResponseResult.success({}))
+})
 
 module.exports = router;
