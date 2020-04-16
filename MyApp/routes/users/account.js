@@ -6,7 +6,8 @@ const DbUtils = new DbUtilsClass('t_user_account')
 let account = {
 	id:"",
 	username:"",
-	password:""
+	password:"",
+	status:""
 }
 /* GET users listing. */
 router.post('/login', function (req, res, next) {

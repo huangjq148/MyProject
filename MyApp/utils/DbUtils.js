@@ -95,7 +95,10 @@ class DbUtils {
 		}
 		sql = sql.replace('{{keys}}', keys.join(','))
 		sql = sql.replace('{{values}}', values.join(','))
-		return this.query(sql, params)
+		return this.query(sql, params).then(res=>({
+			result: res,
+			dataObj:dataObj
+		}))
 	}
 
 	update(dataObj, updateParams, tableName) {
