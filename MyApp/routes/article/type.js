@@ -12,8 +12,9 @@ let article = {
     photoPath:"",
     description:"",
 }
-router.all("*", function(req, res, next){
-    DbUtils.curUser = req.session.curUser
+
+router.all("/*",function(req,res,next) {
+    DbUtils.req = req;
     next()
 })
 

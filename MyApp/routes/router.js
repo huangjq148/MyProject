@@ -14,15 +14,21 @@ let photo = require('./photo/photo')
 let file = require('./file')
 let article = require('./article')
 let articleType = require('./article/type')
+let { ResponseResult } = require('../utils')
+const whiteList = ["/user/login"]
 
 router.use('/login', login)
 /* GET home page. */
-// router.get('/*', function(req, res, next) {
-//     if(req.session.curUser == undefined){
-//         res.redirect('/login/toLogin');
-//     }
-//     next()
-// })
+router.all('/*', function(req, res, next) {
+    if(whiteList.indexOf(req.url)>=0){
+        next()
+    }else if(req.session.curUser === undefined){
+        res.send(ResponseResult.noLogin())
+        return ;
+    }else{
+        next()
+    }
+})
 
 
 router.use('/index', index)

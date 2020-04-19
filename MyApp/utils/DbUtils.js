@@ -1,5 +1,4 @@
-var mysql = require('mysql')
-var http = require('http')
+let mysql = require('mysql')
 let UUID = require('node-uuid')
 let Utils = require('./Utils')
 let moment = require("moment")
@@ -19,7 +18,7 @@ const SEARCH_OPERATOR = {
 	like: "like"
 }
 
-var pool = mysql.createPool({
+let pool = mysql.createPool({
 	host: 'localhost',
 	user: 'root',
 	password: 'root',
@@ -30,6 +29,7 @@ var pool = mysql.createPool({
 class DbUtils {
 	constructor(tableName) {
 		this.tableName = tableName
+		this.req = null;
 	}
 
 	replaceWenHao(sql, params){
@@ -77,14 +77,16 @@ class DbUtils {
 		let params = []
 		let keys = []
 		let values = []
-		if (dataObj.id == '' || dataObj.id == undefined) {
+
+
+		if (dataObj.id === '' || dataObj.id === undefined) {
 			dataObj.id = UUID.v1().replace(/-/g, '')
 		}
 		if (!dataObj.createTime) {
 			dataObj.createTime = moment().format("YYYY-MM-DD HH:mm:ss")
 		}
-		if(this.curUser){
-			dataObj.createUser = this.curUser.username
+		if(this.req.session.curUser){
+			dataObj.createUser = this.req.session.curUser.id
 		}
 		for (let key in dataObj) {
 			if (dataObj[key] || dataObj[key] === 0) {
