@@ -183,7 +183,7 @@ class DbUtils {
 		let pageFn = this.query(`select count(*) total from (${sql + whereMapSql}) allRecord`, params)
 		return Promise.all([contentFn, pageFn])
 			.then(result => {
-				return {resultObject: result[0], totalRecord: result[1][0]['total']}
+				return {content: result[0], totalRecord: result[1][0]['total']}
 			})
 			.catch(reason => {
 				return reason

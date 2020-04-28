@@ -38,7 +38,7 @@ router.use('/goods', goodsInfo)
 router.use('/trade', tradeInfo)
 router.use('/photo', photo)
 router.use('/file', file)
-router.use('/article', article)
-router.use('/articleType', articleType)
+router.use('/articles/type', articleType)
+router.use('/articles', article)
 
 module.exports = router
