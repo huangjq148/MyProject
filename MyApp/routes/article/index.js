@@ -2,8 +2,8 @@
  *   @Author huangjq
  *   @createDate 2019/8/12
  */
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 let { Utils, DbUtilsClass, ResponseResult } = require('../../utils')
 const DbUtils = new DbUtilsClass('t_article')
 let article = {
@@ -11,6 +11,7 @@ let article = {
     title: '',
     type: '',
     content: '',
+    contentText: '',
     clickCount: 0
 }
 router.all('/*', function(req, res, next) {
