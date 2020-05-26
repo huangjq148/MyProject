@@ -5,27 +5,18 @@
 const express = require('express')
 const router = express.Router()
 let { Utils, DbUtilsClass, ResponseResult } = require('../../utils')
-const DbUtils = new DbUtilsClass('t_article')
-let article = {
+const DbUtils = new DbUtilsClass('t_role_permission_info')
+let permission = {
     id: '',
-    title: '',
-    type: '',
-    content: '',
-    contentText: '',
-    clickCount: 0
+    name: '',
+    description: '',
+    code: ''
 }
 router.all('/*', function(req, res, next) {
     DbUtils.req = req
     next()
 })
 
-router.post('/list/type/:id', async function(req, res, next) {
-    let id = req.param('id')
-    id==="all" && (id = "")
-    const {currentPage,pageSize} = req.body;
-    let result = await DbUtils.queryPage({ whereMap: { type_like: id }, currentPage, pageSize })
-    res.end(ResponseResult.success(result))
-})
 
 router.post('/list', async function(req, res, next) {
     let result = await DbUtils.queryPage(req.body)
@@ -43,14 +34,14 @@ router.delete('/:id', async function(req, res) {
 })
 
 router.post('/', async function(req, res) {
-    Utils.copyValue(article, req.body)
-    await DbUtils.insert(article)
+    Utils.copyValue(permission, req.body)
+    await DbUtils.insert(permission)
     res.send(ResponseResult.success({}))
 })
 
 router.put('/', async function(req, res) {
-    Utils.copyValue(article, req.body)
-    await DbUtils.update(article, { id: article.id })
+    Utils.copyValue(permission, req.body)
+    await DbUtils.update(permission, { id: permission.id })
     res.send(ResponseResult.success({}))
 })
 

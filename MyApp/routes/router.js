@@ -14,6 +14,8 @@ let photo = require('./photo/photo')
 let file = require('./file')
 let article = require('./article')
 let articleType = require('./article/type')
+let role = require('./role/role')
+let permission = require('./role/permission')
 let { ResponseResult } = require('../utils')
 const whiteList = ["/user/login"]
 
@@ -40,5 +42,7 @@ router.use('/photo', photo)
 router.use('/file', file)
 router.use('/articles/type', articleType)
 router.use('/articles', article)
+router.use('/role', role)
+router.use('/permission', permission)
 
 module.exports = router
