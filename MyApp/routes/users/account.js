@@ -7,27 +7,9 @@ let account = {
 	id:"",
 	username:"",
 	password:"",
-	status:""
+	status:"",
+	roles: []
 }
-/* GET users listing. */
-router.post('/login', function (req, res, next) {
-	let queryParams = {
-		username: req.body.username,
-		password: req.body.password
-	}
-	DbUtils.queryObj(queryParams,"t_user_account").then(function (result) {
-		DbUtils.queryObj({userId: result.id}).then(function (userInfo) {
-			req.session.curUser = {
-				id: result.id,
-				username: result.username,
-				name: userInfo.name,
-				sex: userInfo.sex,
-				avatar: userInfo.avatar
-			}
-			res.send(ResponseResult.success(result));
-		})
-	});
-});
 
 router.post('/list', async function (req, res, next) {
 	let result = await DbUtils.queryPage(req.body)

@@ -23,14 +23,27 @@ router.post('/login', async function(req, res, next) {
     }
     let accountInfo = await DbUtils.queryObj(queryParams, 't_user_account')
     if (accountInfo.id) {
+        const roles = accountInfo.roles
+        let permissions = new Set()
+        if(roles && (typeof roles ==="string")){
+            const roleList = roles.split(",");
+            for(let i = 0; i< roleList.length; i++){
+                const role =  await DbUtils.queryObj({code: roleList[i]}, "t_role")
+                role.permissions.split(",").map(item=>{
+                    permissions.add(item);
+                })
+            }
+        }
         let userInfo = await DbUtils.queryObj({ id: accountInfo.userId })
+        permissions = Array.from(permissions);
         req.session.curUser = {
             id: accountInfo.id,
             userId: userInfo.id,
             username: accountInfo.username,
             name: userInfo.name,
             sex: userInfo.sex,
-            avatar: userInfo.avatar
+            avatar: userInfo.avatar,
+            permissions
         }
         res.send(ResponseResult.success(userInfo))
     } else {
@@ -44,8 +57,7 @@ router.get('/logout', function(req, res, next) {
 })
 
 router.get('/info', async function(req, res, next) {
-    let userInfo = await DbUtils.queryObj({ id: req.session.curUser.userId })
-    res.end(ResponseResult.success(userInfo))
+    res.end(ResponseResult.success(req.session.curUser))
 })
 
 
