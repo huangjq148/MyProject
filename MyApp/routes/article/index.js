@@ -11,6 +11,7 @@ let article = {
     title: '',
     type: '',
     content: '',
+    photoPath: '',
     contentText: '',
     clickCount: 0
 }

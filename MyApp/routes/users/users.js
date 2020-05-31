@@ -29,7 +29,7 @@ router.post('/login', async function(req, res, next) {
             const roleList = roles.split(",");
             for(let i = 0; i< roleList.length; i++){
                 const role =  await DbUtils.queryObj({code: roleList[i]}, "t_role")
-                role.permissions.split(",").map(item=>{
+                role.permissions && role.permissions.split(",").map(item=>{
                     permissions.add(item);
                 })
             }
