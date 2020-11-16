@@ -16,40 +16,40 @@ goodsInfo.remark = ''
 
 router.post('/list', function(req, res, next) {
     DbUtils.queryPage(req.body, 't_goods').then(result => {
-        res.end(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     })
 })
 
 router.get('/list', function(req, res, next) {
     DbUtils.queryPage(req.body, 'vw_goodsInfo').then(result => {
-        res.end(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     })
 })
 
 router.get('/:id', function(req, res, next) {
     DbUtils.queryObj({ id: req.param('id') }).then(result => {
-        res.end(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     })
 })
 router.post('/', function(req, res, next) {
     Utils.copyValue(goodsInfo, req.body)
     DbUtils.insert(goodsInfo)
         .then(result => {
-            res.end(ResponseResult.success())
+            res.json(ResponseResult.success())
         })
         .catch(err => {
-            res.end(ResponseResult.fail())
+            res.json(ResponseResult.fail())
         })
 })
 router.delete('/:id', function(req, res, next) {
     DbUtils.delete({ id: req.param('id') }).then(result => {
-        res.end(ResponseResult.success())
+        res.json(ResponseResult.success())
     })
 })
 router.put('/', function(req, res, next) {
     Utils.copyValue(goodsInfo, req.body)
     DbUtils.update(goodsInfo, { id: goodsInfo.id }).then(result => {
-        res.end(ResponseResult.success())
+        res.json(ResponseResult.success())
     })
 })
 

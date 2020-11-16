@@ -41,20 +41,20 @@ router.post('/saveOrUpdate', function(req, res, next) {
 
     Promise.all(waitArr)
         .then(function(data) {
-            res.end(ResponseResult.success())
+            res.json(ResponseResult.success())
         })
         .catch(function(err) {
-            res.end(err)
+            res.json(err)
         })
 })
 
 router.post('/list', function(req, res, next) {
     DbUtils.queryPage(req.body)
         .then(result => {
-            res.end(ResponseResult.success(result))
+            res.json(ResponseResult.success(result))
         })
         .catch(reason => {
-            res.end({ errMsg: reason })
+            res.json({ errMsg: reason })
         })
 })
 
@@ -65,7 +65,7 @@ router.get('/listView', function(req, res, next) {
 router.get("/list/:id",function(req,res){
     let id = req.params.id;
     DbUtils.queryList({whereMap:{recordId:id}},"t_upload_file").then(result=>{
-        res.send(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     }).catch(err=>{
         debugger;
     })
@@ -79,13 +79,13 @@ router.get('/edit/:id', function(req, res, next) {
         Promise.all([photoInfoFn, filesFn])
             .then(result => {
                 result[0]['files'] = result[1]['list']
-                res.end(ResponseResult.success({ info: result[0],fileList: result[1] }))
+                res.json(ResponseResult.success({ info: result[0],fileList: result[1] }))
             })
             .catch(reason => {
-                res.end(reason)
+                res.json(reason)
             })
     } else {
-        res.end(JSON.stringify({ message: '缺少id参数' }))
+        res.json(JSON.stringify({ message: '缺少id参数' }))
     }
 })
 
@@ -93,13 +93,13 @@ router.get('/delete/:id', function(req, res, next) {
     let f1 = DbUtils.delete({ id: req.params.id })
     let f2 = DbUtils.delete({ recordId: req.params.id }, 't_upload_file')
     Promise.all([f1, f2]).then(result => {
-        res.end(ResponseResult.success())
+        res.json(ResponseResult.success())
     })
 })
 
 router.get('/latest', function(req,res){
     DbUtils.query("select * from t_upload_file ORDER BY createtime desc limit 1").then(result=>{
-        res.end(ResponseResult.success(result[0]))
+        res.json(ResponseResult.success(result[0]))
     })
 })
 

@@ -20,26 +20,26 @@ router.all('/*', function(req, res, next) {
 
 router.post('/list', function(req, res, next) {
     DbUtils.queryPage({ ...req.body, sort: { key: 'sortNo', value: 'asc' } }).then(result => {
-        res.end(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     })
 })
 
 router.get('/:id', function(req, res, next) {
     DbUtils.queryObj({ id: req.params.id }).then(result => {
-        res.end(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     })
 })
 
 router.delete('/:id', function(req, res) {
     DbUtils.delete({ id: req.params.id }).then(function() {
-        res.send(ResponseResult.success({}))
+        res.json(ResponseResult.success({}))
     })
 })
 
 router.post('/', function(req, res) {
     Utils.copyValue(article, req.body)
     DbUtils.insert(article).then(function() {
-        res.send(ResponseResult.success({}))
+        res.json(ResponseResult.success({}))
     })
 })
 
@@ -53,13 +53,13 @@ router.put('/sort/:id/:isUp', async function(req, res) {
     let sql2 = `update t_article_type set sortNo=sortNo${isUp === '0'? '-':'+' }1 where sortNo=${newSortNo} and id!='${id}'`
     await DbUtils.query(sql1)
     await DbUtils.query(sql2)
-    res.send(ResponseResult.success({}))
+    res.json(ResponseResult.success({}))
 })
 
 router.put('/', function(req, res) {
     Utils.copyValue(article, req.body)
     DbUtils.update(article, { id: article.id }).then(function() {
-        res.send(ResponseResult.success({}))
+        res.json(ResponseResult.success({}))
     })
 })
 

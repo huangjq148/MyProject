@@ -38,7 +38,7 @@ router.post('/upload', multipartMiddleware, async function(req, res, next) {
                     downloadUrl: "/file/download/"+fileRealName,
                 }
                 console.log(response)
-                res.end(JSON.stringify(response))
+                res.json(response)
             }
         })
     })
@@ -85,12 +85,12 @@ router.post('/delete/:id', function(req, res, next) {
                         console.log(error)
                         return false
                     }
-                    res.end(ResponseResult.success())
+                    res.json(ResponseResult.success())
                 })
             })
     })
         .catch(() => {
-            res.end(ResponseResult.fail())
+            res.json(ResponseResult.fail())
         })
 })
 

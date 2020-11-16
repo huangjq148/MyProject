@@ -16,21 +16,33 @@ let article = require('./article')
 let articleType = require('./article/type')
 let role = require('./role/role')
 let permission = require('./role/permission')
+let code = require('./code')
 let { ResponseResult } = require('../utils')
 const whiteList = ["/user/login"]
 
 router.use('/login', login)
 /* GET home page. */
-router.all('/*', function(req, res, next) {
-    if(whiteList.indexOf(req.url)>=0){
-        next()
-    }else if(req.session.curUser === undefined){
-        res.send(ResponseResult.noLogin())
-        return ;
-    }else{
-        next()
-    }
+router.all('/*', function (req, res, next) {
+    // if(whiteList.indexOf(req.url)>=0){
+    //     next()
+    // }else if(req.session.curUser === undefined){
+    //     res.send(ResponseResult.noLogin())
+    //     return ;
+    // }else{
+    //     next()
+    // }
+    next()
 })
+router.get("/api/currentUser", user.getUserInfo)
+router.get("/user/info", user.getUserInfo)
+router.post("/user/login", user.login)
+
+// 表码
+router.get("/code/TABLES",code.queryDatabaseTables)
+router.get("/code/:codeId",code.code)
+router.post("/code",code.queryPage)
+router.post("/code/dist",code.queryDicPage)
+router.put("/code/dist",code.updateDic)
 
 
 router.use('/index', index)

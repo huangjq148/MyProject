@@ -39,7 +39,7 @@ router.post("/statistics",function(req,res,next){
             }
         })
 
-        res.end(ResponseResult.success({
+        res.json(ResponseResult.success({
             sellTotal,purTotal,profitTotal
         }))
     })
@@ -53,7 +53,7 @@ router.post('/', function(req, res, next) {
     DbUtils.queryObj({ id: tradeInfo.goodsId }, 't_goods').then(goodsInfo => {
         goodsInfo = handleStockChange(tradeInfo, goodsInfo)
         if (goodsInfo.stock < 0) {
-            res.end(ResponseResult.fail('库存不足'))
+            res.json(ResponseResult.fail('库存不足'))
             return
         }
         DbUtils.update(goodsInfo, { id: goodsInfo.id }, 't_goods').then(res => {
@@ -61,10 +61,10 @@ router.post('/', function(req, res, next) {
         })
 
         DbUtils.insert(tradeInfo).then(result2 => {
-            res.end(ResponseResult.success())
+            res.json(ResponseResult.success())
         })
             .catch(err => {
-                res.end(ResponseResult.fail())
+                res.json(ResponseResult.fail())
             })
     })
 })
@@ -74,7 +74,7 @@ router.post('/', function(req, res, next) {
  */
 router.post('/list', function(req, res, next) {
     DbUtils.queryPage(req.body,"vw_trade_info").then(result => {
-        res.end(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     })
 })
 
@@ -83,7 +83,7 @@ router.post('/list', function(req, res, next) {
  */
 router.get('/:id', function(req, res, next) {
     DbUtils.queryObj({ id: req.params.id }).then(result => {
-        res.end(ResponseResult.success(result))
+        res.json(ResponseResult.success(result))
     })
 })
 
@@ -93,7 +93,7 @@ router.get('/:id', function(req, res, next) {
 router.put('/', function(req, res, next) {
     Utils.copyValue(tradeInfo, req.body)
     DbUtils.update(tradeInfo, { id: tradeInfo.id }).then(result => {
-        res.end(ResponseResult.success())
+        res.json(ResponseResult.success())
     })
 })
 
@@ -110,7 +110,7 @@ router.delete('/:id', function(req, res, next) {
         }
         await DbUtils.update(goodsInfo, { id: goodsInfo.id }, 't_goods');
         let deleteResult = await DbUtils.delete({ id: req.params.id })
-        res.end(ResponseResult.success());
+        res.json(ResponseResult.success());
     }
     deleteTrade()
 

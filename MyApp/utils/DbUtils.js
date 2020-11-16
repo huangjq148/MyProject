@@ -1,7 +1,8 @@
-let mysql = require('mysql')
-let UUID = require('node-uuid')
-let Utils = require('./Utils')
-let moment = require("moment")
+const mysql = require('mysql')
+const UUID = require('node-uuid')
+const Utils = require('./Utils')
+const moment = require("moment")
+const config = require("../config/index")
 // EQ 就是 EQUAL等于
 // NE就是 NOT EQUAL不等于
 // GT 就是 GREATER THAN大于
@@ -18,13 +19,7 @@ const SEARCH_OPERATOR = {
 	like: "like"
 }
 
-let pool = mysql.createPool({
-	host: 'localhost',
-	user: 'root',
-	password: 'root',
-	database: 'recorder',
-	port: 3306
-})
+let pool = mysql.createPool(config.dbInfo)
 
 class DbUtils {
 	constructor(tableName) {
@@ -32,13 +27,13 @@ class DbUtils {
 		this.req = null;
 	}
 
-	replaceWenHao(sql, params){
+	replaceWenHao(sql, params) {
 		let i = 0
 		// let params = ["d818acf06c0a11eaa60bcb95426e4e52","h6u77d",7,"6hgy",7,7,"2020-03-22 15:37:55","d818acf06c0a11eaa60bcb95426e4e52"];
-		let result = sql.replace(/\?/g,(item,index,c,d,e)=>{
+		let result = sql.replace(/\?/g, (item, index, c, d, e) => {
 			let arg = params[i++]
-			if(isNaN(arg)){
-				arg = '"'+arg+'"'
+			if (isNaN(arg)) {
+				arg = '"' + arg + '"'
 			}
 			return arg
 		})
@@ -48,7 +43,7 @@ class DbUtils {
 	query(sql, params) {
 		console.log('sql:' + sql)
 		console.log('params:' + params)
-		console.log("result---",this.replaceWenHao(sql, params))
+		console.log("result---", this.replaceWenHao(sql, params))
 
 		return new Promise(function (resolve, reject) {
 			pool.getConnection(function (err, conn) {
@@ -85,7 +80,7 @@ class DbUtils {
 		if (!dataObj.createTime) {
 			dataObj.createTime = moment().format("YYYY-MM-DD HH:mm:ss")
 		}
-		if(this.req.session.curUser){
+		if (this.req.session.curUser) {
 			dataObj.createUser = this.req.session.curUser.id
 		}
 		for (let key in dataObj) {
@@ -97,9 +92,9 @@ class DbUtils {
 		}
 		sql = sql.replace('{{keys}}', keys.join(','))
 		sql = sql.replace('{{values}}', values.join(','))
-		return this.query(sql, params).then(res=>({
+		return this.query(sql, params).then(res => ({
 			result: res,
-			dataObj:dataObj
+			dataObj: dataObj
 		}))
 	}
 
@@ -112,7 +107,7 @@ class DbUtils {
 		if (!dataObj.updateTime) {
 			dataObj.updateTime = moment().format("YYYY-MM-DD HH:mm:ss")
 		}
-		if(this.curUser){
+		if (this.curUser) {
 			dataObj.createUser = this.curUser.username
 		}
 		for (let key in dataObj) {
@@ -183,7 +178,7 @@ class DbUtils {
 		let pageFn = this.query(`select count(*) total from (${sql + whereMapSql}) allRecord`, params)
 		return Promise.all([contentFn, pageFn])
 			.then(result => {
-				return {content: result[0], totalRecord: result[1][0]['total']}
+				return { content: result[0], totalRecord: result[1][0]['total'] }
 			})
 			.catch(reason => {
 				return reason
@@ -228,7 +223,7 @@ class DbUtils {
 				if (result.length > 0) {
 					responseResult = result[0]
 				} else {
-					responseResult = Promise.reject("没有符合条件的数据")
+					responseResult = Promise.reject("not found")
 				}
 				return responseResult
 			})
@@ -242,7 +237,7 @@ class DbUtils {
 	 * @param whereMap 条件	{prop1: 3}
 	 * @param tableName	表格名
 	 */
-	increase(data, whereMap, tableName){
+	increase(data, whereMap, tableName) {
 		let querySql = `select * from ${tableName || this.tableName} where 1=1 `
 		let updateSql = `update ${tableName || this.tableName} set {{update}} where 1=1 `
 		let whereMapSql = ""
@@ -254,7 +249,7 @@ class DbUtils {
 		}
 		whereMapSql = this.generateWhereSql(whereMap, params)
 		updateSql += whereMapSql;
-		updateSql = updateSql.replace("{{update}}",updateData.join(","))
+		updateSql = updateSql.replace("{{update}}", updateData.join(","))
 		return this.query(updateSql, params)
 	}
 }

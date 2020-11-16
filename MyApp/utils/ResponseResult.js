@@ -15,7 +15,7 @@ class ResponseResult {
         this.result.statusCode = 200
         this.result.data = data
         this.result.message = message
-        return JSON.stringify(this.result)
+        return this.result
     }
 
     fail(data, message = '操作失败', statusCode = 300) {
@@ -23,7 +23,7 @@ class ResponseResult {
         this.result.statusCode = statusCode
         this.result.data = data
         this.result.message = message
-        return JSON.stringify(this.result)
+        return this.result
     }
 
     noLogin() {
@@ -32,7 +32,7 @@ class ResponseResult {
             statusCode: 401,
             message:"需要登录或者说没有通过登陆认证"
         }
-        return JSON.stringify(result)
+        return result
     }
 
     noPermission(){
@@ -41,7 +41,7 @@ class ResponseResult {
             statusCode: 403,
             message:"权限不足"
         }
-        return JSON.stringify(result)
+        return result
     }
 }
 

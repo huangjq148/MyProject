@@ -13,29 +13,29 @@ let account = {
 
 router.post('/list', async function (req, res, next) {
 	let result = await DbUtils.queryPage(req.body)
-	res.end(ResponseResult.success(result))
+	res.json(ResponseResult.success(result))
 })
 
 router.get('/:id', async function (req, res, next) {
 	let result = await DbUtils.queryObj({id: req.params.id})
-	res.end(ResponseResult.success(result))
+	res.json(ResponseResult.success(result))
 })
 
 router.delete("/:id", async function (req, res) {
 	await DbUtils.delete({id:req.params.id})
-	res.send(ResponseResult.success({}))
+	res.json(ResponseResult.success({}))
 })
 
 router.post("/", async function (req, res) {
 	Utils.copyValue(account, req.body)
 	await DbUtils.insert(account)
-	res.send(ResponseResult.success({}))
+	res.json(ResponseResult.success({}))
 })
 
 router.put("/", async function (req, res) {
 	Utils.copyValue(account, req.body)
 	await DbUtils.update(account,{id:account.id})
-	res.send(ResponseResult.success({}))
+	res.json(ResponseResult.success({}))
 })
 
 module.exports = router;
