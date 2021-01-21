@@ -24,7 +24,7 @@
     "node-uuid": "^1.4.8",
     "react-hot-loader": "^0.4.5",
     "serve-favicon": "~2.3.0",
-    "socket.io": "^1.7.2",
+    "socket.io": "^2.4.0",
     "uuid": "^3.3.2",
     "vue": "^2.5.16"
   },
